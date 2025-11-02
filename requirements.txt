@@ -1,0 +1,9 @@
+torch>=2.1
+torchvision
+torchaudio
+tiktoken
+numpy
+tqdm
+datasets
+wandb
+matplotlib
