@@ -17,6 +17,7 @@ It is collaboratively developed by:
 ---
 
 ## Repository Structure
+```bash
 cbs-nanogpt-study/
 │
 ├── model_45m.py # Sammie: defines 45M-param model (importable)
@@ -46,6 +47,7 @@ cbs-nanogpt-study/
 │
 ├── requirements.txt # dependencies (for pip)
 └── README.md # this file
+```
 
 
 
