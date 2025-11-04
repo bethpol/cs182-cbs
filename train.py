@@ -28,13 +28,14 @@ from torch.nn.parallel import DistributedDataParallel as DDP
 from torch.distributed import init_process_group, destroy_process_group
 
 from model import GPTConfig, GPT
+from model_45M import count_parameters
 
 # -----------------------------------------------------------------------------
 # default config values designed to train a gpt2 (124M) on OpenWebText
 # I/O
 out_dir = 'out'
-eval_interval = 2000
-log_interval = 1
+eval_interval = 2000 # for checkpointing and wandb logging
+log_interval = 1 # for logging on the terminal
 eval_iters = 200
 eval_only = False # if True, script exits right after the first eval
 always_save_checkpoint = True # if True, always save a checkpoint after each eval
@@ -49,7 +50,9 @@ wandb_run_name = 'gpt2' # 'run' + str(time.time())
 dataset = 'openwebtext'
 gradient_accumulation_steps = 5 * 8 # used to simulate larger batch sizes
 batch_size = 12 # if gradient_accumulation_steps > 1, this is the micro-batch size
-block_size = 1024
+# effective batch size = batch_size × gradient_accumulation_steps -- this is what we're interested in.
+block_size = 1024 # The maximum number of tokens the model can "see" at once (per sequence). It's the model's context window.
+vocab_size = 50304
 # model
 n_layer = 12
 n_head = 12
@@ -83,8 +86,13 @@ config = {k: globals()[k] for k in config_keys} # will be useful for logging
 
 # various inits, derived attributes, I/O setup
 ddp = int(os.environ.get('RANK', -1)) != -1 # is this a ddp run?
+# | Variable   | What It Means                         | Example (2 machines, 4 GPUs each) |
+# |------------|---------------------------------------|-----------------------------------|
+# | RANK       | Global process ID across all machines | 0, 1, 2, 3, 4, 5, 6, 7            |
+# | LOCAL_RANK | Process ID on this machine only       | 0, 1, 2, 3 (on each machine)      |
+# | WORLD_SIZE | Total number of processes             | 8                                 |
 if ddp:
-    init_process_group(backend=backend)
+    init_process_group(backend=backend) # Set up communication between GPUs
     ddp_rank = int(os.environ['RANK'])
     ddp_local_rank = int(os.environ['LOCAL_RANK'])
     ddp_world_size = int(os.environ['WORLD_SIZE'])
@@ -93,7 +101,7 @@ if ddp:
     master_process = ddp_rank == 0 # this process will do logging, checkpointing etc.
     seed_offset = ddp_rank # each process gets a different seed
     # world_size number of processes will be training simultaneously, so we can scale
-    # down the desired gradient accumulation iterations per process proportionally
+    # down the desired gradient accumulation iterations per process proportionally *****
     assert gradient_accumulation_steps % ddp_world_size == 0
     gradient_accumulation_steps //= ddp_world_size
 else:
@@ -117,14 +125,16 @@ ctx = nullcontext() if device_type == 'cpu' else torch.amp.autocast(device_type=
 
 # poor man's data loader
 data_dir = os.path.join('data', dataset)
-def get_batch(split):
+def get_batch(split, iter_num=None):
     # We recreate np.memmap every batch to avoid a memory leak, as per
     # https://stackoverflow.com/questions/45132940/numpy-memmap-memory-usage-want-to-iterate-once/61472122#61472122
     if split == 'train':
         data = np.memmap(os.path.join(data_dir, 'train.bin'), dtype=np.uint16, mode='r')
     else:
         data = np.memmap(os.path.join(data_dir, 'val.bin'), dtype=np.uint16, mode='r')
-    ix = torch.randint(len(data) - block_size, (batch_size,))
+    ix = torch.randint(len(data) - block_size, (batch_size,)) # random starting positions for batch
+    # if split == 'train' and master_process and iter_num != None: # sanity check for dataset checkpoint state
+    #     print(f"DEBUG: iter {iter_num}, indexes: {ix}")
     x = torch.stack([torch.from_numpy((data[i:i+block_size]).astype(np.int64)) for i in ix])
     y = torch.stack([torch.from_numpy((data[i+1:i+1+block_size]).astype(np.int64)) for i in ix])
     if device_type == 'cuda':
@@ -137,28 +147,17 @@ def get_batch(split):
 # init these up here, can override if init_from='resume' (i.e. from a checkpoint)
 iter_num = 0
 best_val_loss = 1e9
-
-# attempt to derive vocab_size from the dataset
-meta_path = os.path.join(data_dir, 'meta.pkl')
-meta_vocab_size = None
-if os.path.exists(meta_path):
-    with open(meta_path, 'rb') as f:
-        meta = pickle.load(f)
-    meta_vocab_size = meta['vocab_size']
-    print(f"found vocab_size = {meta_vocab_size} (inside {meta_path})")
+print(f"Initial best val loss: {best_val_loss}")
 
 # model init
 model_args = dict(n_layer=n_layer, n_head=n_head, n_embd=n_embd, block_size=block_size,
-                  bias=bias, vocab_size=None, dropout=dropout) # start with model_args from command line
+                  bias=bias, vocab_size=vocab_size, dropout=dropout) # start with model_args from command line
 if init_from == 'scratch':
     # init a new model from scratch
-    print("Initializing a new model from scratch")
-    # determine the vocab size we'll use for from-scratch training
-    if meta_vocab_size is None:
-        print("defaulting to vocab_size of GPT-2 to 50304 (50257 rounded up for efficiency)")
-    model_args['vocab_size'] = meta_vocab_size if meta_vocab_size is not None else 50304
+    print("Initializing 45M model from scratch")
     gptconf = GPTConfig(**model_args)
     model = GPT(gptconf)
+    print(f"Model parameters: {count_parameters(model):,}")
 elif init_from == 'resume':
     print(f"Resuming training from {out_dir}")
     # resume training from a checkpoint.
@@ -175,6 +174,7 @@ elif init_from == 'resume':
     # create the model
     gptconf = GPTConfig(**model_args)
     model = GPT(gptconf)
+    print(f"Model parameters: {count_parameters(model):,}")
     state_dict = checkpoint['model']
     # to properly start from resumed point in the dataset
     if 'rng_state' in checkpoint:
@@ -260,7 +260,10 @@ X, Y = get_batch('train') # fetch the very first batch
 t0 = time.time()
 local_iter_num = 0 # number of iterations in the lifetime of this process
 raw_model = model.module if ddp else model # unwrap DDP container if needed
-running_mfu = -1.0
+running_mfu = -1.0 # mfu - model flops utilization
+# MFU = How efficiently you're using your GPU
+# It's the ratio of:
+# MFU = (Actual FLOPS achieved) / (Theoretical peak FLOPS of GPU)
 while True:
 
     # determine and set the learning rate for this iteration
@@ -342,7 +345,7 @@ while True:
     t1 = time.time()
     dt = t1 - t0
     t0 = t1
-    if iter_num % log_interval == 0 and master_process:
+    if iter_num % log_interval == 0 and master_process: # this is logging on the terminal
         # get loss as float. note: this is a CPU-GPU sync point
         # scale up to undo the division above, approximating the true total loss (exact would have been a sum)
         lossf = loss.item() * gradient_accumulation_steps
@@ -357,5 +360,6 @@ while True:
     if iter_num > max_iters:
         break
 
+print("Done training!")
 if ddp:
     destroy_process_group()
