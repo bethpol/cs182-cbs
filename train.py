@@ -39,6 +39,8 @@ eval_iters = 200
 eval_only = False # if True, script exits right after the first eval
 always_save_checkpoint = True # if True, always save a checkpoint after each eval
 init_from = 'scratch' # 'scratch' or 'resume' or 'gpt2*'
+resume_ckpt_fname = ""
+input_seed = 1337
 # wandb logging
 wandb_log = False # disabled by default
 wandb_project = 'owt'
@@ -103,7 +105,8 @@ print(f"tokens per iteration will be: {tokens_per_iter:,}")
 
 if master_process:
     os.makedirs(out_dir, exist_ok=True)
-torch.manual_seed(1337 + seed_offset)
+torch.manual_seed(input_seed + seed_offset)
+print(f"Seeds set|| input_seed = {input_seed}, seed_offset = {seed_offset}")
 torch.backends.cuda.matmul.allow_tf32 = True # allow tf32 on matmul
 torch.backends.cudnn.allow_tf32 = True # allow tf32 on cudnn
 device_type = 'cuda' if 'cuda' in device else 'cpu' # for later use in torch.autocast
@@ -158,7 +161,10 @@ if init_from == 'scratch':
 elif init_from == 'resume':
     print(f"Resuming training from {out_dir}")
     # resume training from a checkpoint.
-    ckpt_path = os.path.join(out_dir, 'ckpt.pt')
+    if resume_ckpt_fname == "":
+        ckpt_path = os.path.join(out_dir, 'ckpt.pt')
+    else:
+        ckpt_path = os.path.join(out_dir, resume_ckpt_fname)
     checkpoint = torch.load(ckpt_path, map_location=device)
     checkpoint_model_args = checkpoint['model_args']
     # force these config attributes to be equal otherwise we can't even resume training
@@ -169,6 +175,12 @@ elif init_from == 'resume':
     gptconf = GPTConfig(**model_args)
     model = GPT(gptconf)
     state_dict = checkpoint['model']
+    # to properly start from resumed point in the dataset
+    if 'rng_state' in checkpoint:
+        print(f"PyTorch RNG state({checkpoint['rng_state']}) found in checkpoint.")
+        torch.set_rng_state(checkpoint['rng_state'].cpu())
+    else:
+        print("Warning: RNG state not found in checkpoint. Data sequence will restart.")
     # fix the keys of the state dictionary :(
     # honestly no idea how checkpoints sometimes get this prefix, have to debug more
     unwanted_prefix = '_orig_mod.'
@@ -178,15 +190,10 @@ elif init_from == 'resume':
     model.load_state_dict(state_dict)
     iter_num = checkpoint['iter_num']
     best_val_loss = checkpoint['best_val_loss']
+    print(f"Resuming training from {iter_num}/{max_iters} at best val loss = {best_val_loss:.3f}")
 elif init_from.startswith('gpt2'):
-    print(f"Initializing from OpenAI GPT-2 weights: {init_from}")
-    # initialize from OpenAI GPT-2 weights
-    override_args = dict(dropout=dropout)
-    model = GPT.from_pretrained(init_from, override_args)
-    # read off the created config params, so we can store them into checkpoint correctly
-    for k in ['n_layer', 'n_head', 'n_embd', 'block_size', 'bias', 'vocab_size']:
-        model_args[k] = getattr(model.config, k)
-# crop down the model block size if desired, using model surgery
+    raise NotImplementedError("GPT-2 initialization not supported for 45M model. Use 'scratch' or 'resume'.")
+# crop down the model block size if desired, using model surgery -- if you want to train with smaller number of tokens per sequence
 if block_size < model.config.block_size:
     model.crop_block_size(block_size)
     model_args['block_size'] = block_size # so that the checkpoint will have the right value
@@ -198,6 +205,7 @@ scaler = torch.cuda.amp.GradScaler(enabled=(dtype == 'float16'))
 # optimizer
 optimizer = model.configure_optimizers(weight_decay, learning_rate, (beta1, beta2), device_type)
 if init_from == 'resume':
+    print("Resuming optimizer state from checkpoint")
     optimizer.load_state_dict(checkpoint['optimizer'])
 checkpoint = None # free up memory
 
@@ -271,19 +279,35 @@ while True:
                 "lr": lr,
                 "mfu": running_mfu*100, # convert to percentage
             })
-        if losses['val'] < best_val_loss or always_save_checkpoint:
+        if iter_num > 0:
+            checkpoint = {
+                'model': raw_model.state_dict(),
+                'optimizer': optimizer.state_dict(),
+                'model_args': model_args,
+                'iter_num': iter_num,
+                'train_loss': losses['train'],
+                'val_loss': losses['val'],
+                'best_val_loss': best_val_loss,
+                'config': config,
+                'rng_state': torch.get_rng_state() # to resume from proper dataset iteration
+            }
+            # Format numbers for filename (using scientific notation for tokens)
+            total_tokens = iter_num * tokens_per_iter
+            tokens_str = f"{total_tokens:.2e}".replace("+", "").replace("e0", "e")  # e.g., 1.23e8
+            train_loss_str = f"{losses['train']:.3f}"
+            val_loss_str = f"{losses['val']:.3f}"
+            ckpt_filename = f"step({iter_num:07d})_tokens({tokens_str})_tloss{train_loss_str}_vloss{val_loss_str}_ckpt.pt"
+    
+        if losses['val'] < best_val_loss: # checkpointing at best val loss
             best_val_loss = losses['val']
             if iter_num > 0:
-                checkpoint = {
-                    'model': raw_model.state_dict(),
-                    'optimizer': optimizer.state_dict(),
-                    'model_args': model_args,
-                    'iter_num': iter_num,
-                    'best_val_loss': best_val_loss,
-                    'config': config,
-                }
-                print(f"saving checkpoint to {out_dir}")
-                torch.save(checkpoint, os.path.join(out_dir, 'ckpt.pt'))
+                checkpoint['best_val_loss'] = best_val_loss
+                print(f"saving checkpoint with best val loss to {out_dir}")
+                torch.save(checkpoint, os.path.join(out_dir, f"best_{ckpt_filename}"))
+        elif always_save_checkpoint: # checkpointing at eval_interval
+            if iter_num > 0:
+                torch.save(checkpoint, os.path.join(out_dir, ckpt_filename))
+
     if iter_num == 0 and eval_only:
         break
 
