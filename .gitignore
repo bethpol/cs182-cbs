@@ -1,1 +1,4 @@
-out_trial_45m/
+out_*/
+__pycache__
+logs/
+.ipynb_checkpoints
