@@ -1,0 +1,83 @@
+{
+  "dataset_info": {
+    "source": "allenai/c4",
+    "subset": "en",
+    "streaming": true,
+    "shuffle_seed": 42,
+    "sampling_method": "random_sampling_within_windows",
+    "window_size": 700000,
+    "sample_size": 100000,
+    "expected_sample_size": "~52,100,000",
+    "created_at": "2025-11-03T15:02:00.379210",
+    "processing_duration_seconds": 363.280576
+  },
+  "tokenization": {
+    "tokenizer": "gpt2",
+    "vocab_size": 50257,
+    "eot_token": 50256
+  },
+  "training_data": {
+    "filename": "100M/train.bin",
+    "num_tokens": 100000000,
+    "num_documents_processed": 300000,
+    "avg_tokens_per_doc": 477.9946,
+    "file_size_bytes": 200000000,
+    "file_size_gb": 0.2
+  },
+  "validation_data": {
+    "filename": "100M/val.bin",
+    "num_tokens": 4779946,
+    "num_documents": 10000,
+    "file_size_bytes": 9559892,
+    "file_size_mb": 9.56
+  },
+  "configuration": {
+    "block_size": 1024,
+    "max_batch_size": 16384,
+    "tokens_per_step_max": 16777216,
+    "target_train_tokens": 100000000,
+    "dtype": "<class 'numpy.uint16'>",
+    "num_proc": 32,
+    "batch_size": 100000,
+    "window_size": 700000,
+    "sample_size": 100000
+  },
+  "batch_size_info": {
+    "64": {
+      "tokens_per_step": 65536,
+      "num_steps": 1525
+    },
+    "128": {
+      "tokens_per_step": 131072,
+      "num_steps": 762
+    },
+    "256": {
+      "tokens_per_step": 262144,
+      "num_steps": 381
+    },
+    "512": {
+      "tokens_per_step": 524288,
+      "num_steps": 190
+    },
+    "1024": {
+      "tokens_per_step": 1048576,
+      "num_steps": 95
+    },
+    "2048": {
+      "tokens_per_step": 2097152,
+      "num_steps": 47
+    },
+    "4096": {
+      "tokens_per_step": 4194304,
+      "num_steps": 23
+    },
+    "8192": {
+      "tokens_per_step": 8388608,
+      "num_steps": 11
+    },
+    "16384": {
+      "tokens_per_step": 16777216,
+      "num_steps": 5
+    }
+  }
+}

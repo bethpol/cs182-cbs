@@ -1,0 +1,2 @@
+data/c4_dataset/100M/train.bin filter=lfs diff=lfs merge=lfs -text
+data/c4_dataset/100M/train_shuffled_1024.bin filter=lfs diff=lfs merge=lfs -text
