@@ -36,7 +36,7 @@ import torch.nn as nn
 sys.path.insert(0, os.path.dirname(__file__))
 from model_45M import build_gpt_45m, count_parameters
 from dataloader import create_dataloader
-from optimizers import adamw, muon
+from optimizers import adamw, muon_w_adam
 
 # -----------------------------------------------------------------------------
 # Configuration
@@ -76,6 +76,8 @@ weight_decay = 0.1
 beta1 = 0.9
 beta2 = 0.95
 grad_clip = None  # Gradient clipping
+lr_muon_adam = 3e-4
+wd_muon_adam = 0.1
 
 # System
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -184,10 +186,14 @@ if optimizer_type == "adamw":
     print(f"Weight decay: {weight_decay}")
     print(f"Betas: ({beta1}, {beta2})")
 elif optimizer_type == "muon":
-    optimizer = muon(
+    optimizer = muon_w_adam(
         model,
         learning_rate=learning_rate,
-        weight_decay=weight_decay
+        weight_decay=weight_decay,
+        lr_adam=lr_muon_adam,
+        wd_adam=wd_muon_adam,
+        beta1=beta1,
+        beta2=beta2
     )
     print(f"Learning rate: {learning_rate}")
     print(f"Weight decay: {weight_decay}")
