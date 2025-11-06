@@ -31,6 +31,8 @@ This version of the training script `train_sweep.py` can be used to run hyperpar
     - 'muon': Muon optimizer
 * **learning_rate**: Learning rate to set for the optimizer. In the current version there's no scheduler to update the learning rate.
 * **weight_decay**: Weight decay parameter to set for the optimizers
+* **lr_muon_adam**: Learning rate to use with the additional AdamW optimier. ONLY needs to be set if Muon is used as an optimizer.
+* **wd_muon_adam**: Weoght decay to use with the additional AdamW optimier. ONLY needs to be set if Muon is used as an optimizer.
 
 ### 2. Run the script once the configs are defined
 
