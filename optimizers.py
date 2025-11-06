@@ -53,7 +53,6 @@ def muon_w_adam(model, learning_rate=0.02, momentum=0.95, weight_decay=0.0, lr_a
             else:
                 other_params.append(param)
 
-    print(f"Using Muon optimizer")
     print(f"  - Muon (2D params): {len(muon_params)} parameters")
     print(f"  - AdamW (1D params): {len(other_params)} parameters")
 

@@ -129,6 +129,10 @@ print(f"{'='*60}")
 if init_from == 'scratch':
     print("Creating new 45M GPT model from scratch")
     model = build_gpt_45m(device=device)
+    # crop down the model block size if desired, using model surgery -- if you want to train with smaller number of tokens per sequence
+    if block_size < model.config.block_size:
+        model.crop_block_size(block_size)
+    print(f"Model block size: {model.config.block_size}")
     checkpoint_token_pos = 0
     tokens_seen = 0
     optimizer_state = None
@@ -144,6 +148,10 @@ elif init_from == 'resume':
 
     checkpoint = torch.load(ckpt_path, map_location=device, weights_only=False)
     model = build_gpt_45m(device=device)
+    # crop down the model block size if desired, using model surgery -- if you want to train with smaller number of tokens per sequence
+    if block_size < model.config.block_size:
+        model.crop_block_size(block_size)
+    print(f"Model block size: {model.config.block_size}")
     state_dict = checkpoint['model']
     # fix the keys of the state dictionary :(
     # honestly no idea how checkpoints sometimes get this prefix, have to debug more
