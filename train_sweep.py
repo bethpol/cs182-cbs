@@ -249,7 +249,7 @@ def estimate_loss(model, val_loader, eval_iters: int) -> float:
 
     for _ in range(eval_iters):
         try:
-            x, y = val_loader.get_batch(batch_size)
+            x, y = val_loader.get_batch(batch_size) # same batch size as the training batch size
             with ctx:
                 logits, loss = model(x, y)
             losses.append(loss.item())
@@ -301,7 +301,7 @@ def save_checkpoint(
 
     # Save best checkpoint if this is the best
     if is_best:
-        best_path = os.path.join(out_dir, f'best_{ckpt_name}.pt')
+        best_path = os.path.join(out_dir, f'best.pt')
         torch.save(checkpoint, best_path)
         print(f"Saved BEST checkpoint to {best_path}")
 
@@ -436,12 +436,18 @@ while tokens_seen < max_tokens:
     # Checkpointing
     if tokens_seen - last_checkpoint_tokens >= checkpoint_interval_tokens and master_process and tokens_seen>0:
         print(f"\nSaving checkpoint at {tokens_seen:,} tokens...")
-        val_loss = estimate_loss(model, val_loader, eval_iters)
+        if log_interval_tokens != checkpoint_interval_tokens:
+            val_loss = estimate_loss(model, val_loader, eval_iters)
+            is_best = val_loss < best_val_loss
+            if is_best:
+                best_val_loss = val_loss
+                print(f"New best validation loss: {best_val_loss:.4f}")
         dataloader_state = train_loader.get_state()
         tokens_str = f"{tokens_seen:.2e}".replace("+", "").replace("e0", "e")  # e.g., 1.23e8
         train_loss_str = f"{avg_loss:.3f}"
         val_loss_str = f"{val_loss:.3f}"
-        ckpt_name = f"tokens({tokens_str})_tloss({train_loss_str})_vloss({val_loss_str})_ckpt.pt"
+        # ckpt_name = f"tokens({tokens_str})_tloss({train_loss_str})_vloss({val_loss_str})_ckpt.pt"
+        ckpt_name = "checkpoint.pt"
         save_checkpoint(
             model=model,
             optimizer=optimizer,
@@ -454,7 +460,7 @@ while tokens_seen < max_tokens:
             best_val_loss=best_val_loss,
             out_dir=out_dir,
             ckpt_name=ckpt_name,
-            is_best=False # not really used as effectively yet
+            is_best=is_best # not really used as effectively yet
         )
 
         last_checkpoint_tokens = tokens_seen
@@ -470,16 +476,19 @@ if master_process:
     print("Running final evaluation...")
     val_loss = estimate_loss(model, val_loader, eval_iters)
     print(f"Final validation loss: {val_loss:.4f}")
-    print(f"Best validation loss: {best_val_loss:.4f}")
 
     # Save final checkpoint
     print("Saving final checkpoint...")
     dataloader_state = train_loader.get_state()
     is_best = val_loss < best_val_loss
+    if is_best:
+        best_val_loss = val_loss
+        print(f"Best validation loss: {best_val_loss:.4f}")
     tokens_str = f"{tokens_seen:.2e}".replace("+", "").replace("e0", "e")  # e.g., 1.23e8
     train_loss_str = f"{avg_loss:.3f}"
     val_loss_str = f"{val_loss:.3f}"
-    ckpt_name = f"tokens({tokens_str})_tloss({train_loss_str})_vloss({val_loss_str})_ckpt.pt"
+    # ckpt_name = f"tokens({tokens_str})_tloss({train_loss_str})_vloss({val_loss_str})_ckpt.pt"
+    ckpt_name = "checkpoint_last.pt"
     save_checkpoint(
         model=model,
         optimizer=optimizer,
