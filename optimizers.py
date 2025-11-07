@@ -82,11 +82,35 @@ def muon_w_adam(model, learning_rate=0.02, momentum=0.95, weight_decay=0.0, lr_a
 
     return MultiOptimizer(optimizers)
 
-class MultiOptimizer:
-    """Wrapper to handle multiple optimizers as one."""
+class MultiOptimizer(torch.optim.Optimizer):
+    """Wrapper to handle multiple optimizers as one.
+
+    Inherits from torch.optim.Optimizer to be compatible with PyTorch schedulers.
+
+    Note: We don't call super().__init__() because:
+    1. It would try to register parameters with this optimizer instance
+    2. Our parameters are already registered with the wrapped optimizers
+    3. This would cause "parameter appears in more than one group" errors
+
+    Instead, we manually initialize required attributes to satisfy the Optimizer interface.
+    """
 
     def __init__(self, optimizers):
+        from collections import defaultdict
+
         self.optimizers = optimizers
+
+        # Manually initialize attributes required by torch.optim.Optimizer.
+        # We do this instead of calling super().__init__() to avoid parameter
+        # registration conflicts (parameters are already owned by wrapped optimizers).
+
+        self.defaults = {}  # Required by Optimizer base class
+        self.state = defaultdict(dict)  # Must be defaultdict(dict), not plain dict!
+        self._optimizer_step_pre_hooks = {}  # Required for hook support
+        self._optimizer_step_post_hooks = {}  # Required for hook support
+
+        # Note: We don't set self.param_groups here because our @property
+        # will handle access to it dynamically.
 
     @property
     def param_groups(self):
@@ -104,17 +128,30 @@ class MultiOptimizer:
             param_groups.extend(optimizer.param_groups)
         return param_groups
 
-    def step(self):
+    def step(self, closure=None):
+        """Perform a single optimization step.
+
+        Args:
+            closure: A closure that reevaluates the model and returns the loss (optional)
+        """
+        loss = None
+        if closure is not None:
+            loss = closure()
+
         for optimizer in self.optimizers:
             optimizer.step()
+
+        return loss
 
     def zero_grad(self, set_to_none=True):
         for optimizer in self.optimizers:
             optimizer.zero_grad(set_to_none=set_to_none)
 
     def state_dict(self):
+        """Return state dict as a list of individual optimizer state dicts."""
         return [opt.state_dict() for opt in self.optimizers]
 
     def load_state_dict(self, state_dicts):
+        """Load state dict from a list of individual optimizer state dicts."""
         for opt, state in zip(self.optimizers, state_dicts):
             opt.load_state_dict(state)
