@@ -1,4 +1,2 @@
-out_*/
-__pycache__
-logs/
-.ipynb_checkpoints
+out_trial_45m/
+.DS_Store
