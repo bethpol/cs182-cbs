@@ -62,12 +62,19 @@ cbs-nanogpt-study/
 conda create -n cbs-nanogpt python=3.10 -y
 conda activate cbs-nanogpt
 
-# 2) Install PyTorch
-# ---- GPU build (CUDA 12.x, Linux/Windows with NVIDIA driver) ----
-pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+# 2) Install PyTorch 2.9
+# Select the installation option based on your CUDA version on Linux/Windows systems:
+# a) CUDA 12.6
+pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cu126
+# or
+# b) CUDA 12.8
+pip3 install torch torchvision
+# or
+# c) CUDA 13.0
+pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cu130
 
-# ---- OR CPU-only build (for laptops / M-series Macs) ----
-# pip install torch torchvision torchaudio
+# ---- OR CPU-only build (for Linux) ----
+# pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cpu
 
 # 3) Install project dependencies
 pip install numpy tqdm tiktoken datasets wandb matplotlib
