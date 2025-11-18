@@ -55,6 +55,7 @@ log_interval_tokens = 5_000_000      # Log training loss every 5M tokens
 val_interval_tokens = 50_000_000     # Evaluate validation loss every 50M tokens (less frequent)
 checkpoint_interval_tokens = 500_000_000  # Checkpoint every 500M tokens
 eval_iters = 200                   # Number of evaluation iterations (steps) not on a token basis
+eval_only = False
 
 # WandB logging
 wandb_log = True
@@ -514,15 +515,21 @@ if init_from == 'resume':
 
 print()
 
+data_loader_exhausted = False
+
 while tokens_seen < max_tokens:
     # Forward-backward pass with gradient accumulation
     loss_accum = 0.0
+
+    if eval_only:
+        break
 
     for micro_step in range(gradient_accumulation_steps):
         try:
             x, y = train_loader.get_batch(batch_size)
         except StopIteration:
             print(f"\nReached end of training data at {tokens_seen:,} tokens")
+            data_loader_exhausted = True
             break
 
         # Forward pass
@@ -533,6 +540,9 @@ while tokens_seen < max_tokens:
         # Backward pass
         scaler.scale(loss).backward()
         loss_accum += loss.item()
+
+    if data_loader_exhausted:
+        break
         
     # calculate grad_norm with or without clipping
     scaler.unscale_(optimizer)
@@ -673,6 +683,7 @@ if master_process:
     print("Saving final checkpoint...")
     dataloader_state = train_loader.get_state()
     is_best = val_loss < best_val_loss
+    print(f"Validation loss: {val_loss:.4f}")
     if is_best:
         best_val_loss = val_loss
         print(f"Best validation loss: {best_val_loss:.4f}")

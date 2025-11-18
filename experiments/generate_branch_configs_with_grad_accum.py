@@ -1,0 +1,304 @@
+"""
+Generate configuration files for branched training experiment WITH AUTOMATIC GRADIENT ACCUMULATION.
+
+This is an enhanced version that automatically handles batch sizes that don't fit in GPU memory
+by calculating appropriate gradient accumulation steps.
+
+Key improvements over basic version:
+- Automatically calculates gradient accumulation when batch size exceeds GPU capacity
+- Supports both manual specification and automatic estimation of max micro-batch size
+- Prints clear table showing batch size breakdown for all k-values
+- Maintains effective batch size while staying within memory limits
+"""
+
+import os
+import math
+import auto_gradient_accumulation as aga
+
+# =============================================================================
+# EXPERIMENT CONFIGURATION - MODIFY THESE VALUES
+# =============================================================================
+
+# Base checkpoint to branch from
+BASE_CHECKPOINT_DIR = "out_trial_45m"
+BASE_CHECKPOINT_FILE = "ckpt.pt"
+
+# Base hyperparameters (from your original training run)
+BASE_BATCH_SIZE = 8
+BASE_LEARNING_RATE = 3e-4
+BASE_BLOCK_SIZE = 128
+
+# Experiment parameters
+K_VALUES = [1, 2, 4, 8, 16, 32, 64]
+BRANCH_SEED = 0
+DELTA_STEPS_AS_TOKENS = 100_663_296
+
+# Data paths
+TRAIN_DATA_FILE = 'data/shakespeare_char/train.bin'
+VAL_DATA_FILE = 'data/shakespeare_char/val.bin'
+
+# Optimizer settings
+OPTIMIZER_TYPE = "adamw"
+WEIGHT_DECAY = 0.1
+LEARNING_RATE_MUON_ADAM = 3e-4
+WEIGHT_DECAY_MUON_ADAM = 0.003
+BETA1 = 0.9
+BETA2 = 0.95
+
+# Logging and checkpointing
+LOG_INTERVAL_TOKENS = 10_000
+CHECKPOINT_INTERVAL_TOKENS = 50_000
+EVAL_ITERS = 50
+
+# WandB settings
+WANDB_LOG = True
+WANDB_PROJECT = "branched-training-cbs"
+
+# Output directory for configs
+CONFIG_OUTPUT_DIR = "configs_branch_sweep"
+
+# =============================================================================
+# GRADIENT ACCUMULATION SETTINGS
+# =============================================================================
+
+# Multi-GPU Configuration
+# Set to None to auto-detect, or specify the number of GPUs you'll use
+NUM_GPUS = None  # Will auto-detect if None
+
+# Option 1: Manual specification (recommended if you know your GPU capacity)
+# Set this to the maximum batch size PER GPU that fits in memory
+MAX_MICRO_BATCH_SIZE_PER_GPU = 32  # Adjust based on your GPU
+
+# Option 2: Automatic estimation (if you leave MAX_MICRO_BATCH_SIZE_PER_GPU = None)
+# Uncomment the following to use automatic estimation:
+# MAX_MICRO_BATCH_SIZE_PER_GPU = None
+# MODEL_PARAMS = 45_000_000  # Your model size
+# GPU_MEMORY_GB = 24  # Your GPU memory (will auto-detect if None)
+
+# For automatic estimation, define these:
+MODEL_PARAMS = 45_000_000
+GPU_MEMORY_GB = None  # Set to None to auto-detect, or specify (e.g., 24)
+
+# =============================================================================
+# END OF CONFIGURATION
+# =============================================================================
+
+
+def generate_config_file(k: int, output_dir: str, grad_accum_config: aga.GradientAccumulationConfig):
+    """
+    Generate a config file for a specific k-value with gradient accumulation.
+    
+    Args:
+        k: The scaling factor (batch_size = k * BASE_BATCH_SIZE)
+        output_dir: Directory to save the config file
+        grad_accum_config: GradientAccumulationConfig with batch size settings
+    """
+    # Calculate scaled hyperparameters
+    scaled_batch_size = k * BASE_BATCH_SIZE
+    f_k = math.sqrt(k)
+    scaled_lr = f_k * BASE_LEARNING_RATE
+    scaled_lr_muon_adam = f_k * LEARNING_RATE_MUON_ADAM
+    
+    # Get batch configuration from grad_accum_config
+    micro_batch_per_gpu = grad_accum_config.micro_batch_size_per_gpu
+    grad_accum_steps = grad_accum_config.gradient_accumulation_steps
+    num_gpus = grad_accum_config.num_gpus
+    effective_batch = grad_accum_config.effective_batch_size
+    
+    # Max tokens and output directory
+    max_tokens = DELTA_STEPS_AS_TOKENS
+    branch_out_dir = f"out_branch_{BASE_CHECKPOINT_FILE[:-3]}_k{k}_seed{BRANCH_SEED}_{OPTIMIZER_TYPE}"
+    wandb_run_name = f"branch_{BASE_CHECKPOINT_FILE[:-3]}_k{k}_seed{BRANCH_SEED}_B{effective_batch}_lr{scaled_lr:.2e}_{OPTIMIZER_TYPE}"
+    
+    # Multi-GPU comments
+    if num_gpus > 1:
+        gpu_comment = f"""#   - Number of GPUs: {num_gpus}
+#   - Micro-batch per GPU: {micro_batch_per_gpu}
+#   - Total micro-batch per step: {micro_batch_per_gpu * num_gpus}
+#   - Gradient accumulation: {grad_accum_steps} steps
+#   - Effective batch size: {effective_batch} ({micro_batch_per_gpu}×{num_gpus}×{grad_accum_steps})"""
+        effective_note = f"# NOTE: Effective batch = {micro_batch_per_gpu} (per GPU) × {num_gpus} (GPUs) × {grad_accum_steps} (accum) = {effective_batch}"
+    else:
+        gpu_comment = f"""#   - Micro-batch size: {micro_batch_per_gpu} (fits in GPU memory)
+#   - Gradient accumulation: {grad_accum_steps} steps
+#   - Effective batch size: {effective_batch}"""
+        effective_note = f"# NOTE: Effective batch size = {micro_batch_per_gpu} × {grad_accum_steps} = {effective_batch}"
+    
+    # Generate config content with gradient accumulation
+    config_content = f'''# Configuration for Branch k={k}
+# Generated by generate_branch_configs_with_grad_accum.py
+# 
+# This branch trains with:
+#   - Target batch size: {scaled_batch_size} (k={k} × BASE_BATCH_SIZE={BASE_BATCH_SIZE})
+{gpu_comment}
+#   - Learning rate: {scaled_lr:.6f} (sqrt({k}) × BASE_LR={BASE_LEARNING_RATE})
+#   - Training tokens: {max_tokens:,}
+
+# I/O
+out_dir = '{branch_out_dir}'
+init_from = 'resume'
+resume_ckpt_fname = '../{BASE_CHECKPOINT_DIR}/{BASE_CHECKPOINT_FILE}'
+log_interval_tokens = {LOG_INTERVAL_TOKENS}
+checkpoint_interval_tokens = {CHECKPOINT_INTERVAL_TOKENS}
+eval_iters = {EVAL_ITERS}
+
+# WandB logging
+wandb_log = {WANDB_LOG}
+wandb_project = '{WANDB_PROJECT}'
+wandb_run_name = '{wandb_run_name}'
+
+# Data
+train_data_file = '{TRAIN_DATA_FILE}'
+val_data_file = '{VAL_DATA_FILE}'
+block_size = {BASE_BLOCK_SIZE}
+checkpoint_token_pos = 0
+branch_seed = {BRANCH_SEED}
+branch_window_size_tokens = 100000000
+
+# Training - with gradient accumulation for memory efficiency
+batch_size = {micro_batch_per_gpu}  # Micro-batch size per GPU (fits in GPU memory)
+gradient_accumulation_steps = {grad_accum_steps}  # Accumulate to effective batch = {effective_batch}
+max_tokens = {max_tokens}
+
+{effective_note}
+# This matches the target scaled batch size for k={k}
+
+# Optimizer
+optimizer_type = "{OPTIMIZER_TYPE}"
+learning_rate = {scaled_lr}  # sqrt({k}) × BASE_LR={BASE_LEARNING_RATE}
+weight_decay = {WEIGHT_DECAY}
+beta1 = {BETA1}
+beta2 = {BETA2}
+grad_clip = 1.0
+lr_muon_adam = {scaled_lr_muon_adam} # sqrt({k}) × BASE_LR={LEARNING_RATE_MUON_ADAM}
+wd_muon_adam = {WEIGHT_DECAY_MUON_ADAM}
+
+# Branch metadata (for tracking)
+# k_value = {k}
+# base_batch_size = {BASE_BATCH_SIZE}
+# base_learning_rate = {BASE_LEARNING_RATE}
+# scaling_factor_fk = {f_k}
+# num_gpus = {num_gpus}
+# max_micro_batch_size_per_gpu = {micro_batch_per_gpu}
+'''
+    
+    # Save config file
+    config_filename = f"config_branch_{BASE_CHECKPOINT_FILE[:-3]}_k{k}_seed{BRANCH_SEED}_{OPTIMIZER_TYPE}.py"
+    config_path = os.path.join(output_dir, config_filename)
+    
+    with open(config_path, 'w') as f:
+        f.write(config_content)
+    
+    print(f"  ✓ Generated config for k={k:2d}: {config_filename}")
+    if num_gpus > 1:
+        print(f"    Target: {scaled_batch_size:3d} = Micro/GPU: {micro_batch_per_gpu:3d} × "
+              f"GPUs: {num_gpus} × GradAccum: {grad_accum_steps:2d} → Effective: {effective_batch}, "
+              f"LR: {scaled_lr:.6f}")
+    else:
+        print(f"    Target: {scaled_batch_size:3d} = Micro: {micro_batch_per_gpu:3d} × "
+              f"GradAccum: {grad_accum_steps:2d}, LR: {scaled_lr:.6f}")
+
+
+def main():
+    """Generate all config files for the branched training experiment."""
+    
+    print("="*80)
+    print("Branched Training Config Generator (with Gradient Accumulation)")
+    print("="*80)
+    print()
+    print("Base Configuration:")
+    print(f"  Base checkpoint: {BASE_CHECKPOINT_DIR}/{BASE_CHECKPOINT_FILE}")
+    print(f"  Base batch size (B): {BASE_BATCH_SIZE}")
+    print(f"  Base learning rate (eta): {BASE_LEARNING_RATE}")
+    print(f"  Block size: {BASE_BLOCK_SIZE}")
+    print(f"  Training tokens per branch: {DELTA_STEPS_AS_TOKENS:,}")
+    print()
+    
+    # Detect or use specified number of GPUs
+    if NUM_GPUS is not None:
+        num_gpus = NUM_GPUS
+        print(f"Using specified number of GPUs: {num_gpus}")
+    else:
+        num_gpus = aga.get_num_gpus()
+        print(f"Detected {num_gpus} GPU(s)")
+    print()
+    
+    # Determine max micro-batch size per GPU
+    if MAX_MICRO_BATCH_SIZE_PER_GPU is not None:
+        max_micro_batch_per_gpu = MAX_MICRO_BATCH_SIZE_PER_GPU
+        print(f"Using specified max micro-batch size per GPU: {max_micro_batch_per_gpu}")
+    else:
+        print("Automatically estimating max micro-batch size per GPU...")
+        
+        gpu_mem = GPU_MEMORY_GB
+        if gpu_mem is None:
+            gpu_mem = aga.get_gpu_memory()
+            if gpu_mem is not None:
+                print(f"  Detected GPU memory: {gpu_mem:.1f} GB")
+            else:
+                print("  Could not detect GPU memory, using conservative estimate")
+        
+        max_micro_batch_per_gpu = aga.estimate_max_batch_size_from_memory(
+            model_params=MODEL_PARAMS,
+            sequence_length=BASE_BLOCK_SIZE,
+            gpu_memory_gb=gpu_mem if gpu_mem is not None else 24
+        )
+        print(f"  Estimated max micro-batch size per GPU: {max_micro_batch_per_gpu}")
+    
+    if num_gpus > 1:
+        print(f"  Max batch per step (no accumulation): {max_micro_batch_per_gpu * num_gpus}")
+    
+    print()
+    print(f"K values to test: {K_VALUES}")
+    print()
+    
+    # Print batch size configuration table
+    aga.print_batch_size_table(K_VALUES, BASE_BATCH_SIZE, max_micro_batch_per_gpu, num_gpus)
+    print()
+    
+    # Create output directory for configs
+    os.makedirs(CONFIG_OUTPUT_DIR, exist_ok=True)
+    print(f"Saving configs to: {CONFIG_OUTPUT_DIR}/")
+    print()
+    
+    # Generate config for each k value
+    print("Generating configs:")
+    for k in K_VALUES:
+        target_batch = k * BASE_BATCH_SIZE
+        grad_accum_config = aga.calculate_gradient_accumulation(
+            target_batch_size=target_batch,
+            max_micro_batch_size_per_gpu=max_micro_batch_per_gpu,
+            num_gpus=num_gpus,
+            ensure_divisible=True
+        )
+        generate_config_file(k, CONFIG_OUTPUT_DIR, grad_accum_config)
+    
+    print()
+    print("="*80)
+    print("Config generation complete!")
+    print("="*80)
+    print()
+    print("Summary:")
+    print(f"  • Configs saved to: {CONFIG_OUTPUT_DIR}/")
+    print(f"  • Number of GPUs: {num_gpus}")
+    print(f"  • Max micro-batch size per GPU: {max_micro_batch_per_gpu}")
+    if num_gpus > 1:
+        print(f"  • Max batch per step (no accum): {max_micro_batch_per_gpu * num_gpus}")
+    print(f"  • Gradient accumulation automatically configured for larger k values")
+    print()
+    print("Next steps:")
+    print(f"  1. Review the configs in '{CONFIG_OUTPUT_DIR}/'")
+    print(f"  2. Ensure base checkpoint exists at: {BASE_CHECKPOINT_DIR}/{BASE_CHECKPOINT_FILE}")
+    print(f"  3. Run: python run_branch_sweep.py")
+    print()
+    print("Note: The effective batch size for each k matches k × BASE_BATCH_SIZE.")
+    if num_gpus > 1:
+        print(f"      With {num_gpus} GPUs: effective_batch = micro_batch_per_gpu × {num_gpus} × grad_accum_steps")
+    else:
+        print("      Uses gradient accumulation to stay within GPU memory limits.")
+    print()
+
+
+if __name__ == "__main__":
+    main()
+
