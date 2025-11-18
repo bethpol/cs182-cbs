@@ -514,6 +514,8 @@ if init_from == 'resume':
 
 print()
 
+data_loader_exhausted = False
+
 while tokens_seen < max_tokens:
     # Forward-backward pass with gradient accumulation
     loss_accum = 0.0
@@ -523,6 +525,7 @@ while tokens_seen < max_tokens:
             x, y = train_loader.get_batch(batch_size)
         except StopIteration:
             print(f"\nReached end of training data at {tokens_seen:,} tokens")
+            data_loader_exhausted = True
             break
 
         # Forward pass
@@ -533,6 +536,9 @@ while tokens_seen < max_tokens:
         # Backward pass
         scaler.scale(loss).backward()
         loss_accum += loss.item()
+
+    if data_loader_exhausted:
+        break
         
     # calculate grad_norm with or without clipping
     scaler.unscale_(optimizer)
