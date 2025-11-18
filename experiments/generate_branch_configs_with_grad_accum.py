@@ -39,6 +39,8 @@ VAL_DATA_FILE = 'data/shakespeare_char/val.bin'
 # Optimizer settings
 OPTIMIZER_TYPE = "adamw"
 WEIGHT_DECAY = 0.1
+LEARNING_RATE_MUON_ADAM = 3e-4
+WEIGHT_DECAY_MUON_ADAM = 0.003
 BETA1 = 0.9
 BETA2 = 0.95
 
@@ -94,6 +96,7 @@ def generate_config_file(k: int, output_dir: str, grad_accum_config: aga.Gradien
     scaled_batch_size = k * BASE_BATCH_SIZE
     f_k = math.sqrt(k)
     scaled_lr = f_k * BASE_LEARNING_RATE
+    scaled_lr_muon_adam = f_k * LEARNING_RATE_MUON_ADAM
     
     # Get batch configuration from grad_accum_config
     micro_batch_per_gpu = grad_accum_config.micro_batch_size_per_gpu
@@ -166,8 +169,8 @@ weight_decay = {WEIGHT_DECAY}
 beta1 = {BETA1}
 beta2 = {BETA2}
 grad_clip = 1.0
-lr_muon_adam = {scaled_lr}
-wd_muon_adam = {WEIGHT_DECAY}
+lr_muon_adam = {scaled_lr_muon_adam} # sqrt({k}) × BASE_LR={LEARNING_RATE_MUON_ADAM}
+wd_muon_adam = {WEIGHT_DECAY_MUON_ADAM}
 
 # Branch metadata (for tracking)
 # k_value = {k}
