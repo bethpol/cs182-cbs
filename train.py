@@ -215,11 +215,21 @@ elif init_from == 'resume':
     global_iter_resume = checkpoint.get('global_iter', 0)  # Restore global iteration count
     optimizer_state = checkpoint['optimizer']
     best_val_loss = checkpoint.get('best_val_loss', float('inf'))
-    print(f"Resumed from checkpoint: {ckpt_path}")
-    print(f"  Token position: {checkpoint_token_pos:,}")
-    print(f"  Tokens seen: {tokens_seen:,}")
-    print(f"  Global iterations: {global_iter_resume:,}")
-    print(f"  Best val loss: {best_val_loss:.4f}")
+    
+    # For branching experiments, reset tokens_seen to 0 so each branch trains for the same duration
+    if branch_seed >= 0:
+        print(f"Branching from checkpoint: {ckpt_path}")
+        print(f"  Checkpoint token position: {checkpoint_token_pos:,}")
+        print(f"  Branch seed: {branch_seed}")
+        print(f"  Resetting tokens_seen to 0 (was {tokens_seen:,})")
+        tokens_seen = 0
+        global_iter_resume = 0
+    else:
+        print(f"Resumed from checkpoint: {ckpt_path}")
+        print(f"  Token position: {checkpoint_token_pos:,}")
+        print(f"  Tokens seen: {tokens_seen:,}")
+        print(f"  Global iterations: {global_iter_resume:,}")
+        print(f"  Best val loss: {best_val_loss:.4f}")
 else:
     raise ValueError(f"Unknown init_from: {init_from}")
 
@@ -283,7 +293,9 @@ elif optimizer_type == "muon":
 else:
     raise NotImplementedError(f"Code not implemented to train with: {optimizer_type} optimizer")
 
-if init_from == 'resume' and optimizer_state is not None:
+if init_from == 'resume' and optimizer_state is not None and branch_seed < 0:
+    # For normal resume: load optimizer state
+    # For branching: start with fresh optimizer state (new trajectory)
     optimizer.load_state_dict(optimizer_state)
     print("Loaded optimizer state from checkpoint")
 
@@ -325,8 +337,8 @@ if use_scheduler:
 
     scheduler = LambdaLR(optimizer, lr_lambda=lr_lambda)
 
-    # Load scheduler state if resuming
-    if init_from == 'resume' and 'scheduler' in checkpoint:
+    # Load scheduler state if resuming (but not for branching - branches start fresh)
+    if init_from == 'resume' and 'scheduler' in checkpoint and branch_seed < 0:
         scheduler.load_state_dict(checkpoint['scheduler'])
         print(f"\nLoaded scheduler state from checkpoint")
         print(f"  Resuming from step: {scheduler.last_epoch}") # last_epoch: Current step count (despite the confusing name)
