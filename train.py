@@ -357,10 +357,17 @@ train_loader = create_dataloader(
     gpu_rank=ddp_rank,
 )
 
-# Load dataloader state if resuming
-if init_from == 'resume' and 'dataloader_state' in checkpoint:
+# Load dataloader state if resuming (but NOT for branching experiments)
+# For branching (branch_seed >= 0), we want to start from a NEW data position,
+# not continue from the checkpoint's old position
+if init_from == 'resume' and 'dataloader_state' in checkpoint and branch_seed < 0:
     train_loader.load_state(checkpoint['dataloader_state'])
     print(f"Loaded dataloader state - resuming from sequence position")
+elif branch_seed >= 0:
+    print(f"Branching experiment (seed={branch_seed}) - starting from fresh data position")
+    print(f"  Checkpoint's saved position: {checkpoint_token_pos:,}")
+    print(f"  Offset (seed × window): {branch_seed} × {branch_window_size_tokens:,} = {branch_seed * branch_window_size_tokens:,}")
+    print(f"  Final start position: {train_loader.start_token_pos:,} (checkpoint + offset)")
 
 # Validation loader (always starts from beginning)
 val_loader = create_dataloader(
@@ -688,6 +695,8 @@ if master_process:
         best_val_loss = val_loss
         print(f"Best validation loss: {best_val_loss:.4f}")
     # tokens_str = f"{tokens_seen:.2e}".replace("+", "").replace("e0", "e")  # e.g., 1.23e8
+    # Calculate final avg_loss for checkpoint
+    avg_loss = train_loss / local_iter if local_iter > 0 else 0.0
     # train_loss_str = f"{avg_loss:.3f}"
     # val_loss_str = f"{val_loss:.3f}"
     # # ckpt_name = f"tokens({tokens_str})_tloss({train_loss_str})_vloss({val_loss_str})_ckpt.pt"
