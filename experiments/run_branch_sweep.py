@@ -26,10 +26,10 @@ CONFIG_DIR = "configs_branch_sweep"
 LOGS_DIR = "logs_branch_sweep"
 
 # Training script to run
-TRAIN_SCRIPT = "../train_sweep.py"
+TRAIN_SCRIPT = "../train.py"
 
 # K values (should match generate_branch_configs.py)
-K_VALUES = [1, 2, 4, 8, 16, 32]
+K_VALUES = [1, 2, 4, 8, 16, 32, 64]
 
 # =============================================================================
 
