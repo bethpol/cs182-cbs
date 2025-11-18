@@ -217,9 +217,6 @@ checkpoint_token_pos = 0  # Will be overwritten by checkpoint's saved value
 branch_seed = {seed}  # Offset data position: seed × window_size
 branch_window_size_tokens = {BRANCH_WINDOW_SIZE_TOKENS}
 
-# Random seed for dropout and stochasticity  
-train_seed = {seed}  # Same seed for reproducibility
-
 # Training - with gradient accumulation for memory efficiency
 batch_size = {micro_batch_per_gpu}  # Micro-batch size per GPU (fits in GPU memory)
 gradient_accumulation_steps = {grad_accum_steps}  # Accumulate to effective batch = {effective_batch}
