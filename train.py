@@ -82,7 +82,7 @@ learning_rate = 3e-4
 weight_decay = 0.1
 beta1 = 0.9
 beta2 = 0.95
-grad_clip = None  # Gradient clipping
+grad_clip = 1.0  # Gradient clipping
 lr_muon_adam = 3e-4
 wd_muon_adam = 0.1
 
