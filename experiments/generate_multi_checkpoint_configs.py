@@ -153,9 +153,11 @@ def generate_config_file(
     num_gpus = grad_accum_config.num_gpus
     effective_batch = grad_accum_config.effective_batch_size
     
-    # Max tokens: checkpoint starting position + window size
+    # Max tokens: checkpoint starting position + seed offset + window size
+    # Since dataloader starts at checkpoint_tokens + (seed * window), we need to train until:
+    # checkpoint_tokens + (seed * window) + window = checkpoint_tokens + ((seed + 1) * window)
     checkpoint_tokens = parse_checkpoint_tokens(checkpoint_step)
-    max_tokens = checkpoint_tokens + BRANCH_WINDOW_SIZE_TOKENS
+    max_tokens = checkpoint_tokens + ((seed + 1) * BRANCH_WINDOW_SIZE_TOKENS)
     
     # Clean checkpoint name for file naming (remove .pt extension)
     ckpt_name = checkpoint_file.replace('.pt', '')
