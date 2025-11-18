@@ -29,8 +29,9 @@ BASE_LEARNING_RATE = 3e-4
 BASE_BLOCK_SIZE = 128
 
 # Experiment parameters
-K_VALUES = [1, 2, 4, 8, 16, 32]
-DELTA_STEPS_AS_TOKENS = 100_000
+K_VALUES = [1, 2, 4, 8, 16, 32, 64]
+BRANCH_SEED = 0
+DELTA_STEPS_AS_TOKENS = 100_663_296
 
 # Data paths
 TRAIN_DATA_FILE = 'data/shakespeare_char/train.bin'
@@ -106,8 +107,8 @@ def generate_config_file(k: int, output_dir: str, grad_accum_config: aga.Gradien
     
     # Max tokens and output directory
     max_tokens = DELTA_STEPS_AS_TOKENS
-    branch_out_dir = f"out_branch_k{k}"
-    wandb_run_name = f"branch_k{k}_B{effective_batch}_lr{scaled_lr:.2e}"
+    branch_out_dir = f"out_branch_{BASE_CHECKPOINT_FILE[:-3]}_k{k}_seed{BRANCH_SEED}_{OPTIMIZER_TYPE}"
+    wandb_run_name = f"branch_{BASE_CHECKPOINT_FILE[:-3]}_k{k}_seed{BRANCH_SEED}_B{effective_batch}_lr{scaled_lr:.2e}_{OPTIMIZER_TYPE}"
     
     # Multi-GPU comments
     if num_gpus > 1:
@@ -151,7 +152,7 @@ train_data_file = '{TRAIN_DATA_FILE}'
 val_data_file = '{VAL_DATA_FILE}'
 block_size = {BASE_BLOCK_SIZE}
 checkpoint_token_pos = 0
-branch_seed = -1
+branch_seed = {BRANCH_SEED}
 branch_window_size_tokens = 100000000
 
 # Training - with gradient accumulation for memory efficiency
@@ -182,7 +183,7 @@ wd_muon_adam = {WEIGHT_DECAY_MUON_ADAM}
 '''
     
     # Save config file
-    config_filename = f"config_branch_k{k}.py"
+    config_filename = f"config_branch_{BASE_CHECKPOINT_FILE[:-3]}_k{k}_seed{BRANCH_SEED}_{OPTIMIZER_TYPE}.py"
     config_path = os.path.join(output_dir, config_filename)
     
     with open(config_path, 'w') as f:
