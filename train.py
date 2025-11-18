@@ -192,10 +192,16 @@ elif init_from == 'resume':
                 # Fall back to ckpt.pt for backwards compatibility
                 ckpt_path = os.path.join(out_dir, 'ckpt.pt')
     else:
-        ckpt_path = os.path.join(out_dir, resume_ckpt_fname)
+        # If resume_ckpt_fname is an absolute path, use it directly
+        # Otherwise, join with out_dir (for relative paths)
+        if os.path.isabs(resume_ckpt_fname):
+            ckpt_path = resume_ckpt_fname
+        else:
+            ckpt_path = os.path.join(out_dir, resume_ckpt_fname)
     if not os.path.exists(ckpt_path):
         raise FileNotFoundError(f"Checkpoint not found: {ckpt_path}")
 
+    print(f"Loading checkpoint from: {ckpt_path}")
     checkpoint = torch.load(ckpt_path, map_location=device, weights_only=False)
     model = build_gpt_45m(device=device)
     # crop down the model block size if desired, using model surgery -- if you want to train with smaller number of tokens per sequence
@@ -218,12 +224,19 @@ elif init_from == 'resume':
     
     # For branching experiments, reset tokens_seen to 0 so each branch trains for the same duration
     if branch_seed >= 0:
-        print(f"Branching from checkpoint: {ckpt_path}")
-        print(f"  Checkpoint token position: {checkpoint_token_pos:,}")
+        print(f"\n{'='*60}")
+        print(f"BRANCHING EXPERIMENT DETECTED")
+        print(f"{'='*60}")
+        print(f"  Source checkpoint: {ckpt_path}")
+        print(f"  Checkpoint's token position: {checkpoint_token_pos:,}")
+        print(f"  Checkpoint's tokens seen: {tokens_seen:,}")
         print(f"  Branch seed: {branch_seed}")
-        print(f"  Resetting tokens_seen to 0 (was {tokens_seen:,})")
+        print(f"  → RESETTING tokens_seen to 0 for this branch")
+        print(f"  → RESETTING global_iter to 0 for this branch")
         tokens_seen = 0
         global_iter_resume = 0
+        print(f"  Branch will train from tokens_seen=0")
+        print(f"{'='*60}")
     else:
         print(f"Resumed from checkpoint: {ckpt_path}")
         print(f"  Token position: {checkpoint_token_pos:,}")
@@ -527,7 +540,12 @@ if init_from == 'resume':
     next_log_milestone = (log_milestone_count + 1) * log_interval_tokens
     next_val_milestone = (val_milestone_count + 1) * val_interval_tokens
     next_ckpt_milestone = (checkpoint_milestone_count + 1) * checkpoint_interval_tokens
-    print(f"\nResuming from milestones:")
+    
+    if branch_seed >= 0:
+        print(f"\nBranching milestones (starting fresh from 0):")
+    else:
+        print(f"\nResuming from milestones:")
+    
     print(f"  Last train log milestone: {log_milestone_count * log_interval_tokens:,} → next at {next_log_milestone:,}")
     print(f"  Last val log milestone: {val_milestone_count * val_interval_tokens:,} → next at {next_val_milestone:,}")
     print(f"  Last checkpoint milestone: {checkpoint_milestone_count * checkpoint_interval_tokens:,} → next at {next_ckpt_milestone:,}")
