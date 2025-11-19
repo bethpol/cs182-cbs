@@ -91,6 +91,7 @@ use_scheduler = True           # Set to True to enable
 warmup_tokens = 50_000_000      # Warmup phase
 stable_tokens = 0     # Stable phase for a 3phase setup. set to 0 for 2-phase i.e. if you don't want a stable phase and want to go to the decay phase directly after warmup
 min_lr_factor = 0.1                  # Minimum LR factor in range [0,1]
+max_tokens_for_scheduler = 5_000_000_000
 
 # System
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -330,8 +331,12 @@ if init_from == 'resume' and optimizer_state is not None and branch_seed < 0:
 # Create learning rate scheduler
 scheduler = None
 if use_scheduler:
+    # Capture base learning rates BEFORE creating scheduler
+    # (scheduler initialization will modify optimizer's param_groups)
+    base_learning_rates = [param_group['lr'] for param_group in optimizer.param_groups]
+
     tokens_per_iter = batch_size * block_size * gradient_accumulation_steps * ddp_world_size
-    max_steps = max_tokens // tokens_per_iter
+    max_steps = max_tokens_for_scheduler // tokens_per_iter
     warmup_steps = warmup_tokens // tokens_per_iter
     stable_steps = stable_tokens // tokens_per_iter
 
@@ -363,20 +368,39 @@ if use_scheduler:
         cosine_decay = 0.5 * (1.0 + math.cos(math.pi * progress))
         return min_lr_factor + (1.0 - min_lr_factor) * cosine_decay
 
-    scheduler = LambdaLR(optimizer, lr_lambda=lr_lambda)
+    scheduler = LambdaLR(optimizer, lr_lambda=lr_lambda) # this steps the optimizer
 
     # Load scheduler state if resuming (but not for branching - branches start fresh)
-    if init_from == 'resume' and 'scheduler' in checkpoint and branch_seed < 0:
+    if init_from == 'resume' and 'scheduler' in checkpoint:
         scheduler.load_state_dict(checkpoint['scheduler'])
-        print(f"\nLoaded scheduler state from checkpoint")
-        print(f"  Resuming from step: {scheduler.last_epoch}") # last_epoch: Current step count (despite the confusing name)
-        print(f"  Current learning rate: {scheduler.get_last_lr()[0]:.6e}")
+
+        if branch_seed >= 0:
+            # Override base_lrs to use the optimizer's current learning rate (from config)
+            scheduler.base_lrs = base_learning_rates
+            # Adjust scheduler step to match token position with new batch size
+            equivalent_step = checkpoint_token_pos // tokens_per_iter
+
+            # Set to equivalent_step - 1, then step once to update optimizer LR
+            scheduler.last_epoch = equivalent_step - 1
+            scheduler.step()  # Updates optimizer's LR and sets last_epoch to equivalent_step
+
+            print(f"\nBranching experiment: Adjusted scheduler for new batch size")
+            print(f"  Checkpoint token position: {checkpoint_token_pos:,}")
+            print(f"  New tokens per iteration: {tokens_per_iter:,}")
+            print(f"  Adjusted scheduler step: {scheduler.last_epoch:,}")
+            print(f"  Current learning rate: {scheduler.get_last_lr()[0]:.6e}")
+            print(f"  Optimizer's LR: {optimizer.param_groups[0]['lr']:.6e}")
+        else:
+            print(f"\nLoaded scheduler state from checkpoint")
+            print(f"  Resuming from step: {scheduler.last_epoch}") # last_epoch: Current step count (despite the confusing name)
+            print(f"  Current learning rate: {scheduler.get_last_lr()[0]:.6e}")
+            print(f"  Optimizer's LR: {optimizer.param_groups[0]['lr']:.6e}")
 
     print(f"  Warmup: {warmup_steps} steps ({warmup_tokens:,} tokens)")
     if stable_steps > 0:
         print(f"  Stable: {stable_steps} steps ({stable_tokens:,} tokens)")
     print(f"  Decay: {max_steps - decay_start_step} steps")
-    print(f"  Total: {max_steps} steps ({max_tokens:,} tokens)")
+    print(f"  Total: {max_steps} steps ({max_tokens_for_scheduler:,} tokens)")
     print(f"  Peak LR for optimizer of interest: {learning_rate}, Min LR for optimizer of interest: {min_lr_factor*learning_rate}")
 
 # -----------------------------------------------------------------------------
