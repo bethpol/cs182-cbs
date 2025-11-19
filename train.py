@@ -322,19 +322,19 @@ elif optimizer_type == "muon":
 else:
     raise NotImplementedError(f"Code not implemented to train with: {optimizer_type} optimizer")
 
-if init_from == 'resume' and optimizer_state is not None and branch_seed < 0:
+if branch_seed >= 0:
+    # For branching capture base learning rates BEFORE creating scheduler
+    # (scheduler initialization will modify optimizer's param_groups)
+    base_learning_rates = [param_group['lr'] for param_group in optimizer.param_groups]
+
+if init_from == 'resume' and optimizer_state is not None:
     # For normal resume: load optimizer state
-    # For branching: start with fresh optimizer state (new trajectory)
     optimizer.load_state_dict(optimizer_state)
     print("Loaded optimizer state from checkpoint")
 
 # Create learning rate scheduler
 scheduler = None
 if use_scheduler:
-    # Capture base learning rates BEFORE creating scheduler
-    # (scheduler initialization will modify optimizer's param_groups)
-    base_learning_rates = [param_group['lr'] for param_group in optimizer.param_groups]
-
     tokens_per_iter = batch_size * block_size * gradient_accumulation_steps * ddp_world_size
     max_steps = max_tokens_for_scheduler // tokens_per_iter
     warmup_steps = warmup_tokens // tokens_per_iter
