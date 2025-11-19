@@ -149,6 +149,21 @@ ptdtype = {'float32': torch.float32, 'bfloat16': torch.bfloat16, 'float16': torc
 ctx = nullcontext() if device_type == 'cpu' else torch.amp.autocast(device_type=device_type, dtype=ptdtype)
 
 # -----------------------------------------------------------------------------
+# Initialize WandB
+# -----------------------------------------------------------------------------
+if wandb_log and master_process:
+    import wandb
+
+    wandb.init(
+        entity="cs182-cbs",
+        project=wandb_project,
+        name=wandb_run_name,
+        config=config,
+        # resume='allow' if init_from == 'resume' else None
+    )
+    print(f"WandB initialized: {wandb_project}/{wandb_run_name}")
+
+# -----------------------------------------------------------------------------
 # Initialize model
 # -----------------------------------------------------------------------------
 print(f"\n{'='*60}")
@@ -489,22 +504,6 @@ def save_checkpoint(
         best_path = os.path.join(out_dir, f'best_vloss_{val_loss:.4f}.pt')
         torch.save(checkpoint, best_path)
         print(f"Saved BEST checkpoint to {best_path} with validation loss {val_loss:.4f}")
-
-
-# -----------------------------------------------------------------------------
-# Initialize WandB
-# -----------------------------------------------------------------------------
-if wandb_log and master_process:
-    import wandb
-
-    wandb.init(
-        entity="cs182-cbs",
-        project=wandb_project,
-        name=wandb_run_name,
-        config=config,
-        # resume='allow' if init_from == 'resume' else None
-    )
-    print(f"WandB initialized: {wandb_project}/{wandb_run_name}")
 
 # -----------------------------------------------------------------------------
 # Training loop
