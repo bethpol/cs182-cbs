@@ -55,6 +55,7 @@ log_interval_tokens = 5_000_000      # Log training loss every 5M tokens
 val_interval_tokens = 50_000_000     # Evaluate validation loss every 50M tokens (less frequent)
 checkpoint_interval_tokens = 500_000_000  # Checkpoint every 500M tokens
 eval_iters = 200                   # Number of evaluation iterations (steps) not on a token basis
+eval_only = False
 
 # WandB logging
 wandb_log = True
@@ -81,7 +82,7 @@ learning_rate = 3e-4
 weight_decay = 0.1
 beta1 = 0.9
 beta2 = 0.95
-grad_clip = None  # Gradient clipping
+grad_clip = 1.0  # Gradient clipping
 lr_muon_adam = 3e-4
 wd_muon_adam = 0.1
 
@@ -90,6 +91,7 @@ use_scheduler = True           # Set to True to enable
 warmup_tokens = 50_000_000      # Warmup phase
 stable_tokens = 0     # Stable phase for a 3phase setup. set to 0 for 2-phase i.e. if you don't want a stable phase and want to go to the decay phase directly after warmup
 min_lr_factor = 0.1                  # Minimum LR factor in range [0,1]
+max_tokens_for_scheduler = 5_000_000_000
 
 # System
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -148,6 +150,21 @@ ptdtype = {'float32': torch.float32, 'bfloat16': torch.bfloat16, 'float16': torc
 ctx = nullcontext() if device_type == 'cpu' else torch.amp.autocast(device_type=device_type, dtype=ptdtype)
 
 # -----------------------------------------------------------------------------
+# Initialize WandB
+# -----------------------------------------------------------------------------
+if wandb_log and master_process:
+    import wandb
+
+    wandb.init(
+        entity="cs182-cbs",
+        project=wandb_project,
+        name=wandb_run_name,
+        config=config,
+        # resume='allow' if init_from == 'resume' else None
+    )
+    print(f"WandB initialized: {wandb_project}/{wandb_run_name}")
+
+# -----------------------------------------------------------------------------
 # Initialize model
 # -----------------------------------------------------------------------------
 print(f"\n{'='*60}")
@@ -191,10 +208,16 @@ elif init_from == 'resume':
                 # Fall back to ckpt.pt for backwards compatibility
                 ckpt_path = os.path.join(out_dir, 'ckpt.pt')
     else:
-        ckpt_path = os.path.join(out_dir, resume_ckpt_fname)
+        # If resume_ckpt_fname is an absolute path, use it directly
+        # Otherwise, join with out_dir (for relative paths)
+        if os.path.isabs(resume_ckpt_fname):
+            ckpt_path = resume_ckpt_fname
+        else:
+            ckpt_path = os.path.join(out_dir, resume_ckpt_fname)
     if not os.path.exists(ckpt_path):
         raise FileNotFoundError(f"Checkpoint not found: {ckpt_path}")
 
+    print(f"Loading checkpoint from: {ckpt_path}")
     checkpoint = torch.load(ckpt_path, map_location=device, weights_only=False)
     model = build_gpt_45m(device=device)
     # crop down the model block size if desired, using model surgery -- if you want to train with smaller number of tokens per sequence
@@ -214,11 +237,28 @@ elif init_from == 'resume':
     global_iter_resume = checkpoint.get('global_iter', 0)  # Restore global iteration count
     optimizer_state = checkpoint['optimizer']
     best_val_loss = checkpoint.get('best_val_loss', float('inf'))
-    print(f"Resumed from checkpoint: {ckpt_path}")
-    print(f"  Token position: {checkpoint_token_pos:,}")
-    print(f"  Tokens seen: {tokens_seen:,}")
-    print(f"  Global iterations: {global_iter_resume:,}")
-    print(f"  Best val loss: {best_val_loss:.4f}")
+    
+    # For branching experiments, reset tokens_seen to 0 so each branch trains for the same duration
+    if branch_seed >= 0:
+        print(f"\n{'='*60}")
+        print(f"BRANCHING EXPERIMENT DETECTED")
+        print(f"{'='*60}")
+        print(f"  Source checkpoint: {ckpt_path}")
+        print(f"  Checkpoint's token position: {checkpoint_token_pos:,}")
+        print(f"  Checkpoint's tokens seen: {tokens_seen:,}")
+        print(f"  Branch seed: {branch_seed}")
+        print(f"  → RESETTING tokens_seen to 0 for this branch")
+        print(f"  → RESETTING global_iter to 0 for this branch")
+        tokens_seen = 0
+        global_iter_resume = 0
+        print(f"  Branch will train from tokens_seen=0")
+        print(f"{'='*60}")
+    else:
+        print(f"Resumed from checkpoint: {ckpt_path}")
+        print(f"  Token position: {checkpoint_token_pos:,}")
+        print(f"  Tokens seen: {tokens_seen:,}")
+        print(f"  Global iterations: {global_iter_resume:,}")
+        print(f"  Best val loss: {best_val_loss:.4f}")
 else:
     raise ValueError(f"Unknown init_from: {init_from}")
 
@@ -282,7 +322,13 @@ elif optimizer_type == "muon":
 else:
     raise NotImplementedError(f"Code not implemented to train with: {optimizer_type} optimizer")
 
+if branch_seed >= 0:
+    # For branching capture base learning rates BEFORE creating scheduler
+    # (scheduler initialization will modify optimizer's param_groups)
+    base_learning_rates = [param_group['lr'] for param_group in optimizer.param_groups]
+
 if init_from == 'resume' and optimizer_state is not None:
+    # For normal resume: load optimizer state
     optimizer.load_state_dict(optimizer_state)
     print("Loaded optimizer state from checkpoint")
 
@@ -290,7 +336,7 @@ if init_from == 'resume' and optimizer_state is not None:
 scheduler = None
 if use_scheduler:
     tokens_per_iter = batch_size * block_size * gradient_accumulation_steps * ddp_world_size
-    max_steps = max_tokens // tokens_per_iter
+    max_steps = max_tokens_for_scheduler // tokens_per_iter
     warmup_steps = warmup_tokens // tokens_per_iter
     stable_steps = stable_tokens // tokens_per_iter
 
@@ -322,20 +368,39 @@ if use_scheduler:
         cosine_decay = 0.5 * (1.0 + math.cos(math.pi * progress))
         return min_lr_factor + (1.0 - min_lr_factor) * cosine_decay
 
-    scheduler = LambdaLR(optimizer, lr_lambda=lr_lambda)
+    scheduler = LambdaLR(optimizer, lr_lambda=lr_lambda) # this steps the optimizer
 
-    # Load scheduler state if resuming
+    # Load scheduler state if resuming (but not for branching - branches start fresh)
     if init_from == 'resume' and 'scheduler' in checkpoint:
         scheduler.load_state_dict(checkpoint['scheduler'])
-        print(f"\nLoaded scheduler state from checkpoint")
-        print(f"  Resuming from step: {scheduler.last_epoch}") # last_epoch: Current step count (despite the confusing name)
-        print(f"  Current learning rate: {scheduler.get_last_lr()[0]:.6e}")
+
+        if branch_seed >= 0:
+            # Override base_lrs to use the optimizer's current learning rate (from config)
+            scheduler.base_lrs = base_learning_rates
+            # Adjust scheduler step to match token position with new batch size
+            equivalent_step = checkpoint_token_pos // tokens_per_iter
+
+            # Set to equivalent_step - 1, then step once to update optimizer LR
+            scheduler.last_epoch = equivalent_step - 1
+            scheduler.step()  # Updates optimizer's LR and sets last_epoch to equivalent_step
+
+            print(f"\nBranching experiment: Adjusted scheduler for new batch size")
+            print(f"  Checkpoint token position: {checkpoint_token_pos:,}")
+            print(f"  New tokens per iteration: {tokens_per_iter:,}")
+            print(f"  Adjusted scheduler step: {scheduler.last_epoch:,}")
+            print(f"  Current learning rate: {scheduler.get_last_lr()[0]:.6e}")
+            print(f"  Optimizer's LR: {optimizer.param_groups[0]['lr']:.6e}")
+        else:
+            print(f"\nLoaded scheduler state from checkpoint")
+            print(f"  Resuming from step: {scheduler.last_epoch}") # last_epoch: Current step count (despite the confusing name)
+            print(f"  Current learning rate: {scheduler.get_last_lr()[0]:.6e}")
+            print(f"  Optimizer's LR: {optimizer.param_groups[0]['lr']:.6e}")
 
     print(f"  Warmup: {warmup_steps} steps ({warmup_tokens:,} tokens)")
     if stable_steps > 0:
         print(f"  Stable: {stable_steps} steps ({stable_tokens:,} tokens)")
     print(f"  Decay: {max_steps - decay_start_step} steps")
-    print(f"  Total: {max_steps} steps ({max_tokens:,} tokens)")
+    print(f"  Total: {max_steps} steps ({max_tokens_for_scheduler:,} tokens)")
     print(f"  Peak LR for optimizer of interest: {learning_rate}, Min LR for optimizer of interest: {min_lr_factor*learning_rate}")
 
 # -----------------------------------------------------------------------------
@@ -356,10 +421,17 @@ train_loader = create_dataloader(
     gpu_rank=ddp_rank,
 )
 
-# Load dataloader state if resuming
-if init_from == 'resume' and 'dataloader_state' in checkpoint:
+# Load dataloader state if resuming (but NOT for branching experiments)
+# For branching (branch_seed >= 0), we want to start from a NEW data position,
+# not continue from the checkpoint's old position
+if init_from == 'resume' and 'dataloader_state' in checkpoint and branch_seed < 0:
     train_loader.load_state(checkpoint['dataloader_state'])
     print(f"Loaded dataloader state - resuming from sequence position")
+elif branch_seed >= 0:
+    print(f"Branching experiment (seed={branch_seed}) - starting from fresh data position")
+    print(f"  Checkpoint's saved position: {checkpoint_token_pos:,}")
+    print(f"  Offset (seed × window): {branch_seed} × {branch_window_size_tokens:,} = {branch_seed * branch_window_size_tokens:,}")
+    print(f"  Final start position: {train_loader.start_token_pos:,} (checkpoint + offset)")
 
 # Validation loader (always starts from beginning)
 val_loader = create_dataloader(
@@ -457,22 +529,6 @@ def save_checkpoint(
         torch.save(checkpoint, best_path)
         print(f"Saved BEST checkpoint to {best_path} with validation loss {val_loss:.4f}")
 
-
-# -----------------------------------------------------------------------------
-# Initialize WandB
-# -----------------------------------------------------------------------------
-if wandb_log and master_process:
-    import wandb
-
-    wandb.init(
-        entity="cs182-cbs",
-        project=wandb_project,
-        name=wandb_run_name,
-        config=config,
-        # resume='allow' if init_from == 'resume' else None
-    )
-    print(f"WandB initialized: {wandb_project}/{wandb_run_name}")
-
 # -----------------------------------------------------------------------------
 # Training loop
 # -----------------------------------------------------------------------------
@@ -507,22 +563,33 @@ if init_from == 'resume':
     next_log_milestone = (log_milestone_count + 1) * log_interval_tokens
     next_val_milestone = (val_milestone_count + 1) * val_interval_tokens
     next_ckpt_milestone = (checkpoint_milestone_count + 1) * checkpoint_interval_tokens
-    print(f"\nResuming from milestones:")
+    
+    if branch_seed >= 0:
+        print(f"\nBranching milestones (starting fresh from 0):")
+    else:
+        print(f"\nResuming from milestones:")
+    
     print(f"  Last train log milestone: {log_milestone_count * log_interval_tokens:,} → next at {next_log_milestone:,}")
     print(f"  Last val log milestone: {val_milestone_count * val_interval_tokens:,} → next at {next_val_milestone:,}")
     print(f"  Last checkpoint milestone: {checkpoint_milestone_count * checkpoint_interval_tokens:,} → next at {next_ckpt_milestone:,}")
 
 print()
 
+data_loader_exhausted = False
+
 while tokens_seen < max_tokens:
     # Forward-backward pass with gradient accumulation
     loss_accum = 0.0
+
+    if eval_only:
+        break
 
     for micro_step in range(gradient_accumulation_steps):
         try:
             x, y = train_loader.get_batch(batch_size)
         except StopIteration:
             print(f"\nReached end of training data at {tokens_seen:,} tokens")
+            data_loader_exhausted = True
             break
 
         # Forward pass
@@ -533,6 +600,9 @@ while tokens_seen < max_tokens:
         # Backward pass
         scaler.scale(loss).backward()
         loss_accum += loss.item()
+
+    if data_loader_exhausted:
+        break
         
     # calculate grad_norm with or without clipping
     scaler.unscale_(optimizer)
@@ -673,10 +743,13 @@ if master_process:
     print("Saving final checkpoint...")
     dataloader_state = train_loader.get_state()
     is_best = val_loss < best_val_loss
+    print(f"Validation loss: {val_loss:.4f}")
     if is_best:
         best_val_loss = val_loss
         print(f"Best validation loss: {best_val_loss:.4f}")
     # tokens_str = f"{tokens_seen:.2e}".replace("+", "").replace("e0", "e")  # e.g., 1.23e8
+    # Calculate final avg_loss for checkpoint
+    avg_loss = train_loss / local_iter if local_iter > 0 else 0.0
     # train_loss_str = f"{avg_loss:.3f}"
     # val_loss_str = f"{val_loss:.3f}"
     # # ckpt_name = f"tokens({tokens_str})_tloss({train_loss_str})_vloss({val_loss_str})_ckpt.pt"
