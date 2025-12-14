@@ -1,0 +1,2242 @@
+{
+  "train_loss": [
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "50M",
+      "k": 0.5,
+      "loss": 4.4912,
+      "sem": 0.03
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "50M",
+      "k": 1.0,
+      "loss": 4.4211,
+      "sem": 0.0248
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "50M",
+      "k": 2.0,
+      "loss": 4.4011,
+      "sem": 0.0119
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "50M",
+      "k": 4.0,
+      "loss": 4.4093,
+      "sem": 0.0059
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "50M",
+      "k": 8.0,
+      "loss": 4.4749,
+      "sem": 0.0031
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "50M",
+      "k": 16.0,
+      "loss": 4.6302,
+      "sem": 0.0026
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "50M",
+      "k": 32.0,
+      "loss": 4.9926,
+      "sem": 0.0149
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "500M",
+      "k": 0.5,
+      "loss": 4.1099,
+      "sem": 0.0299
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "500M",
+      "k": 1.0,
+      "loss": 4.1471,
+      "sem": 0.017
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "500M",
+      "k": 2.0,
+      "loss": 4.058,
+      "sem": 0.0116
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "500M",
+      "k": 4.0,
+      "loss": 4.0197,
+      "sem": 0.0111
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "500M",
+      "k": 8.0,
+      "loss": 4.0031,
+      "sem": 0.011
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "500M",
+      "k": 16.0,
+      "loss": 3.9918,
+      "sem": 0.0081
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "500M",
+      "k": 32.0,
+      "loss": 4.0004,
+      "sem": 0.0146
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "500M",
+      "k": 64.0,
+      "loss": 5.7686,
+      "sem": 0.6802
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "500M",
+      "k": 128.0,
+      "loss": 8.2972,
+      "sem": 0.2124
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "500M",
+      "k": 256.0,
+      "loss": 12.1567,
+      "sem": 0.5087
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "500M",
+      "k": 512.0,
+      "loss": 21.5756,
+      "sem": 0.4319
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "1000M",
+      "k": 0.5,
+      "loss": 3.9948,
+      "sem": 0.0053
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "1000M",
+      "k": 1.0,
+      "loss": 3.914,
+      "sem": 0.0061
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "1000M",
+      "k": 2.0,
+      "loss": 3.8794,
+      "sem": 0.0063
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "1000M",
+      "k": 4.0,
+      "loss": 3.8644,
+      "sem": 0.0063
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "1000M",
+      "k": 8.0,
+      "loss": 3.8555,
+      "sem": 0.0049
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "1000M",
+      "k": 16.0,
+      "loss": 3.8487,
+      "sem": 0.0068
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "1000M",
+      "k": 32.0,
+      "loss": 3.8544,
+      "sem": 0.0033
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "1000M",
+      "k": 64.0,
+      "loss": 4.0417,
+      "sem": 0.0093
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "1000M",
+      "k": 128.0,
+      "loss": 9.7885,
+      "sem": 0.1719
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "1000M",
+      "k": 256.0,
+      "loss": 13.4176,
+      "sem": 0.4966
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "1000M",
+      "k": 512.0,
+      "loss": 23.7804,
+      "sem": 0.6434
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "1500M",
+      "k": 0.5,
+      "loss": 3.9626,
+      "sem": 0.0124
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "1500M",
+      "k": 1.0,
+      "loss": 3.876,
+      "sem": 0.0067
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "1500M",
+      "k": 2.0,
+      "loss": 3.8451,
+      "sem": 0.011
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "1500M",
+      "k": 4.0,
+      "loss": 3.8324,
+      "sem": 0.0005
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "1500M",
+      "k": 8.0,
+      "loss": 3.8257,
+      "sem": 0.0013
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "1500M",
+      "k": 16.0,
+      "loss": 3.8218,
+      "sem": 0.0038
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "1500M",
+      "k": 32.0,
+      "loss": 3.8287,
+      "sem": 0.002
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "1500M",
+      "k": 64.0,
+      "loss": 3.9554,
+      "sem": 0.0089
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "1500M",
+      "k": 128.0,
+      "loss": 7.8358,
+      "sem": 1.0371
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "1500M",
+      "k": 256.0,
+      "loss": 12.3594,
+      "sem": 0.2987
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "1500M",
+      "k": 512.0,
+      "loss": 24.4569,
+      "sem": 0.1026
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "2000M",
+      "k": 0.5,
+      "loss": 3.926,
+      "sem": 0.0214
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "2000M",
+      "k": 1.0,
+      "loss": 3.8517,
+      "sem": 0.0145
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "2000M",
+      "k": 2.0,
+      "loss": 3.8275,
+      "sem": 0.0063
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "2000M",
+      "k": 4.0,
+      "loss": 3.8087,
+      "sem": 0.0076
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "2000M",
+      "k": 8.0,
+      "loss": 3.7996,
+      "sem": 0.0017
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "2000M",
+      "k": 16.0,
+      "loss": 3.8018,
+      "sem": 0.0001
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "2000M",
+      "k": 32.0,
+      "loss": 3.809,
+      "sem": 0.002
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "2000M",
+      "k": 64.0,
+      "loss": 3.9336,
+      "sem": 0.0084
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "2000M",
+      "k": 128.0,
+      "loss": 5.7526,
+      "sem": 0.0547
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "2000M",
+      "k": 256.0,
+      "loss": 14.6401,
+      "sem": 1.1151
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "2000M",
+      "k": 512.0,
+      "loss": 30.1543,
+      "sem": 0.108
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "3000M",
+      "k": 0.5,
+      "loss": 3.9253,
+      "sem": 0.0178
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "3000M",
+      "k": 1.0,
+      "loss": 3.8397,
+      "sem": 0.0092
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "3000M",
+      "k": 2.0,
+      "loss": 3.8053,
+      "sem": 0.0014
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "3000M",
+      "k": 4.0,
+      "loss": 3.7947,
+      "sem": 0.007
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "3000M",
+      "k": 8.0,
+      "loss": 3.7821,
+      "sem": 0.0072
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "3000M",
+      "k": 16.0,
+      "loss": 3.7834,
+      "sem": 0.0057
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "3000M",
+      "k": 32.0,
+      "loss": 3.7938,
+      "sem": 0.0027
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "3000M",
+      "k": 64.0,
+      "loss": 3.8972,
+      "sem": 0.0022
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "3000M",
+      "k": 128.0,
+      "loss": 5.4789,
+      "sem": 0.344
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "3000M",
+      "k": 256.0,
+      "loss": 16.1599,
+      "sem": 2.0434
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "3000M",
+      "k": 512.0,
+      "loss": 38.7748,
+      "sem": 0.9127
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "4000M",
+      "k": 0.5,
+      "loss": 3.9432,
+      "sem": 0.036
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "4000M",
+      "k": 1.0,
+      "loss": 3.8737,
+      "sem": 0.015
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "4000M",
+      "k": 2.0,
+      "loss": 3.8537,
+      "sem": 0.0104
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "4000M",
+      "k": 4.0,
+      "loss": 3.8364,
+      "sem": 0.0053
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "4000M",
+      "k": 8.0,
+      "loss": 3.8194,
+      "sem": 0.0023
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "4000M",
+      "k": 16.0,
+      "loss": 3.822,
+      "sem": 0.0074
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "4000M",
+      "k": 32.0,
+      "loss": 3.825,
+      "sem": 0.004
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "4000M",
+      "k": 64.0,
+      "loss": 4.0,
+      "sem": 0.0205
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "4000M",
+      "k": 128.0,
+      "loss": 11.2485,
+      "sem": 0.4819
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "4000M",
+      "k": 256.0,
+      "loss": 25.6309,
+      "sem": 0.6669
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "4000M",
+      "k": 512.0,
+      "loss": 25.9522,
+      "sem": 1.1024
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "50M",
+      "k": 1.0,
+      "loss": 4.2601,
+      "sem": 0.0008
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "50M",
+      "k": 2.0,
+      "loss": 4.2573,
+      "sem": 0.0008
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "50M",
+      "k": 4.0,
+      "loss": 4.27,
+      "sem": 0.0006
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "50M",
+      "k": 8.0,
+      "loss": 4.3212,
+      "sem": 0.0011
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "50M",
+      "k": 16.0,
+      "loss": 4.4722,
+      "sem": 0.0013
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "50M",
+      "k": 32.0,
+      "loss": 5.0523,
+      "sem": 0.0085
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "50M",
+      "k": 64.0,
+      "loss": 7.0564,
+      "sem": 0.0635
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "500M",
+      "k": 1.0,
+      "loss": 3.9262,
+      "sem": 0.0049
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "500M",
+      "k": 2.0,
+      "loss": 3.9188,
+      "sem": 0.0053
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "500M",
+      "k": 4.0,
+      "loss": 3.9174,
+      "sem": 0.006
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "500M",
+      "k": 8.0,
+      "loss": 3.9266,
+      "sem": 0.0062
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "500M",
+      "k": 16.0,
+      "loss": 3.9637,
+      "sem": 0.0049
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "500M",
+      "k": 32.0,
+      "loss": 4.0645,
+      "sem": 0.004
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "500M",
+      "k": 64.0,
+      "loss": 4.4218,
+      "sem": 0.0126
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "500M",
+      "k": 128.0,
+      "loss": 5.685,
+      "sem": 0.0044
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "500M",
+      "k": 256.0,
+      "loss": 8.5377,
+      "sem": 0.12
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "500M",
+      "k": 512.0,
+      "loss": 12.0834,
+      "sem": 0.6138
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "500M",
+      "k": 1024.0,
+      "loss": 14.3045,
+      "sem": 0.1468
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "1000M",
+      "k": 8.0,
+      "loss": 3.837,
+      "sem": 0.0033
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "1000M",
+      "k": 16.0,
+      "loss": 3.8575,
+      "sem": 0.003
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "1000M",
+      "k": 32.0,
+      "loss": 3.9157,
+      "sem": 0.0048
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "1000M",
+      "k": 64.0,
+      "loss": 4.1061,
+      "sem": 0.0047
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "1000M",
+      "k": 128.0,
+      "loss": 4.7587,
+      "sem": 0.0051
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "1000M",
+      "k": 256.0,
+      "loss": 6.1649,
+      "sem": 0.0748
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "1000M",
+      "k": 512.0,
+      "loss": 8.2922,
+      "sem": 0.2307
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "1000M",
+      "k": 1024.0,
+      "loss": 9.6339,
+      "sem": 0.1491
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "1500M",
+      "k": 1.0,
+      "loss": 3.7937,
+      "sem": 0.0005
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "1500M",
+      "k": 2.0,
+      "loss": 3.7879,
+      "sem": 0.0004
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "1500M",
+      "k": 4.0,
+      "loss": 3.7831,
+      "sem": 0.0007
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "1500M",
+      "k": 8.0,
+      "loss": 3.7826,
+      "sem": 0.0003
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "1500M",
+      "k": 16.0,
+      "loss": 3.7943,
+      "sem": 0.0006
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "1500M",
+      "k": 32.0,
+      "loss": 3.8376,
+      "sem": 0.0009
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "1500M",
+      "k": 64.0,
+      "loss": 3.9715,
+      "sem": 0.0019
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "1500M",
+      "k": 128.0,
+      "loss": 4.4517,
+      "sem": 0.0023
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "1500M",
+      "k": 256.0,
+      "loss": 5.4237,
+      "sem": 0.0248
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "1500M",
+      "k": 512.0,
+      "loss": 6.7302,
+      "sem": 0.1014
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "1500M",
+      "k": 1024.0,
+      "loss": 7.7227,
+      "sem": 0.055
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "2000M",
+      "k": 1.0,
+      "loss": 3.7549,
+      "sem": 0.0018
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "2000M",
+      "k": 2.0,
+      "loss": 3.752,
+      "sem": 0.0022
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "2000M",
+      "k": 4.0,
+      "loss": 3.75,
+      "sem": 0.0033
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "2000M",
+      "k": 8.0,
+      "loss": 3.7488,
+      "sem": 0.0042
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "2000M",
+      "k": 16.0,
+      "loss": 3.7608,
+      "sem": 0.0013
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "2000M",
+      "k": 32.0,
+      "loss": 3.7895,
+      "sem": 0.0042
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "2000M",
+      "k": 64.0,
+      "loss": 3.8841,
+      "sem": 0.0007
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "2000M",
+      "k": 128.0,
+      "loss": 4.2719,
+      "sem": 0.005
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "2000M",
+      "k": 256.0,
+      "loss": 5.06,
+      "sem": 0.0056
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "2000M",
+      "k": 512.0,
+      "loss": 6.1878,
+      "sem": 0.0741
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "2000M",
+      "k": 1024.0,
+      "loss": 6.8522,
+      "sem": 0.1169
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "3000M",
+      "k": 1.0,
+      "loss": 3.6826,
+      "sem": 0.0067
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "3000M",
+      "k": 2.0,
+      "loss": 3.6803,
+      "sem": 0.0068
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "3000M",
+      "k": 4.0,
+      "loss": 3.6758,
+      "sem": 0.0075
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "3000M",
+      "k": 8.0,
+      "loss": 3.6738,
+      "sem": 0.0062
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "3000M",
+      "k": 16.0,
+      "loss": 3.6784,
+      "sem": 0.0077
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "3000M",
+      "k": 32.0,
+      "loss": 3.6898,
+      "sem": 0.0071
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "3000M",
+      "k": 64.0,
+      "loss": 3.7387,
+      "sem": 0.0025
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "3000M",
+      "k": 128.0,
+      "loss": 3.9292,
+      "sem": 0.0033
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "3000M",
+      "k": 256.0,
+      "loss": 4.3661,
+      "sem": 0.0164
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "3000M",
+      "k": 512.0,
+      "loss": 4.7635,
+      "sem": 0.0063
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "3000M",
+      "k": 1024.0,
+      "loss": 5.3739,
+      "sem": 0.0132
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "4000M",
+      "k": 1.0,
+      "loss": 3.6157,
+      "sem": 0.0035
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "4000M",
+      "k": 2.0,
+      "loss": 3.6146,
+      "sem": 0.0032
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "4000M",
+      "k": 4.0,
+      "loss": 3.6121,
+      "sem": 0.003
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "4000M",
+      "k": 8.0,
+      "loss": 3.6124,
+      "sem": 0.003
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "4000M",
+      "k": 16.0,
+      "loss": 3.6128,
+      "sem": 0.003
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "4000M",
+      "k": 32.0,
+      "loss": 3.6155,
+      "sem": 0.0026
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "4000M",
+      "k": 64.0,
+      "loss": 3.633,
+      "sem": 0.0032
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "4000M",
+      "k": 128.0,
+      "loss": 3.6968,
+      "sem": 0.0035
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "4000M",
+      "k": 256.0,
+      "loss": 3.8303,
+      "sem": 0.006
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "4000M",
+      "k": 512.0,
+      "loss": 4.0108,
+      "sem": 0.009
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "4000M",
+      "k": 1024.0,
+      "loss": 4.264,
+      "sem": 0.0081
+    }
+  ],
+  "val_loss": [
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "50M",
+      "k": 0.5,
+      "loss": 4.4868,
+      "sem": 0.0009
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "50M",
+      "k": 1.0,
+      "loss": 4.4155,
+      "sem": 0.0007
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "50M",
+      "k": 2.0,
+      "loss": 4.3923,
+      "sem": 0.001
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "50M",
+      "k": 4.0,
+      "loss": 4.4044,
+      "sem": 0.0016
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "50M",
+      "k": 8.0,
+      "loss": 4.4721,
+      "sem": 0.0039
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "50M",
+      "k": 16.0,
+      "loss": 4.6282,
+      "sem": 0.0072
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "50M",
+      "k": 32.0,
+      "loss": 5.0149,
+      "sem": 0.0188
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "500M",
+      "k": 0.5,
+      "loss": 4.0966,
+      "sem": 0.0021
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "500M",
+      "k": 1.0,
+      "loss": 4.1428,
+      "sem": 0.0005
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "500M",
+      "k": 2.0,
+      "loss": 4.056,
+      "sem": 0.0019
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "500M",
+      "k": 4.0,
+      "loss": 4.0171,
+      "sem": 0.002
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "500M",
+      "k": 8.0,
+      "loss": 3.9976,
+      "sem": 0.0023
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "500M",
+      "k": 16.0,
+      "loss": 3.9889,
+      "sem": 0.0011
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "500M",
+      "k": 32.0,
+      "loss": 4.0014,
+      "sem": 0.003
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "500M",
+      "k": 64.0,
+      "loss": 5.7277,
+      "sem": 0.6626
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "500M",
+      "k": 128.0,
+      "loss": 8.503,
+      "sem": 0.2132
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "500M",
+      "k": 256.0,
+      "loss": 10.692,
+      "sem": 0.4588
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "500M",
+      "k": 512.0,
+      "loss": 12.3721,
+      "sem": 0.1816
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "1000M",
+      "k": 0.5,
+      "loss": 3.992,
+      "sem": 0.0013
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "1000M",
+      "k": 1.0,
+      "loss": 3.912,
+      "sem": 0.0012
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "1000M",
+      "k": 2.0,
+      "loss": 3.8759,
+      "sem": 0.0018
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "1000M",
+      "k": 4.0,
+      "loss": 3.8583,
+      "sem": 0.0022
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "1000M",
+      "k": 8.0,
+      "loss": 3.8477,
+      "sem": 0.0016
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "1000M",
+      "k": 16.0,
+      "loss": 3.8423,
+      "sem": 0.0014
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "1000M",
+      "k": 32.0,
+      "loss": 3.8459,
+      "sem": 0.0066
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "1000M",
+      "k": 64.0,
+      "loss": 4.0251,
+      "sem": 0.0109
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "1000M",
+      "k": 128.0,
+      "loss": 9.2462,
+      "sem": 0.1139
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "1000M",
+      "k": 256.0,
+      "loss": 13.6917,
+      "sem": 1.122
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "1000M",
+      "k": 512.0,
+      "loss": 17.0132,
+      "sem": 1.1523
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "1500M",
+      "k": 0.5,
+      "loss": 3.9485,
+      "sem": 0.0003
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "1500M",
+      "k": 1.0,
+      "loss": 3.8684,
+      "sem": 0.001
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "1500M",
+      "k": 2.0,
+      "loss": 3.8308,
+      "sem": 0.0003
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "1500M",
+      "k": 4.0,
+      "loss": 3.8139,
+      "sem": 0.0002
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "1500M",
+      "k": 8.0,
+      "loss": 3.8053,
+      "sem": 0.0016
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "1500M",
+      "k": 16.0,
+      "loss": 3.7995,
+      "sem": 0.0011
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "1500M",
+      "k": 32.0,
+      "loss": 3.805,
+      "sem": 0.0042
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "1500M",
+      "k": 64.0,
+      "loss": 3.9308,
+      "sem": 0.0062
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "1500M",
+      "k": 128.0,
+      "loss": 8.0103,
+      "sem": 1.2741
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "1500M",
+      "k": 256.0,
+      "loss": 13.3126,
+      "sem": 1.8338
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "1500M",
+      "k": 512.0,
+      "loss": 13.1926,
+      "sem": 0.327
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "2000M",
+      "k": 0.5,
+      "loss": 3.9241,
+      "sem": 0.0008
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "2000M",
+      "k": 1.0,
+      "loss": 3.8444,
+      "sem": 0.0004
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "2000M",
+      "k": 2.0,
+      "loss": 3.8068,
+      "sem": 0.0003
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "2000M",
+      "k": 4.0,
+      "loss": 3.7902,
+      "sem": 0.0005
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "2000M",
+      "k": 8.0,
+      "loss": 3.7803,
+      "sem": 0.0004
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "2000M",
+      "k": 16.0,
+      "loss": 3.7789,
+      "sem": 0.0019
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "2000M",
+      "k": 32.0,
+      "loss": 3.7856,
+      "sem": 0.0027
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "2000M",
+      "k": 64.0,
+      "loss": 3.9215,
+      "sem": 0.01
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "2000M",
+      "k": 128.0,
+      "loss": 5.5272,
+      "sem": 0.0527
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "2000M",
+      "k": 256.0,
+      "loss": 12.3449,
+      "sem": 1.0867
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "2000M",
+      "k": 512.0,
+      "loss": 15.7886,
+      "sem": 0.1302
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "3000M",
+      "k": 0.5,
+      "loss": 3.899,
+      "sem": 0.0006
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "3000M",
+      "k": 1.0,
+      "loss": 3.8189,
+      "sem": 0.0007
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "3000M",
+      "k": 2.0,
+      "loss": 3.7839,
+      "sem": 0.0008
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "3000M",
+      "k": 4.0,
+      "loss": 3.7675,
+      "sem": 0.0006
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "3000M",
+      "k": 8.0,
+      "loss": 3.7602,
+      "sem": 0.0013
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "3000M",
+      "k": 16.0,
+      "loss": 3.7587,
+      "sem": 0.0015
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "3000M",
+      "k": 32.0,
+      "loss": 3.7755,
+      "sem": 0.0033
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "3000M",
+      "k": 64.0,
+      "loss": 3.8706,
+      "sem": 0.0035
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "3000M",
+      "k": 128.0,
+      "loss": 5.3308,
+      "sem": 0.3514
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "3000M",
+      "k": 256.0,
+      "loss": 13.975,
+      "sem": 0.4614
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "3000M",
+      "k": 512.0,
+      "loss": 22.6406,
+      "sem": 2.2741
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "4000M",
+      "k": 0.5,
+      "loss": 3.9299,
+      "sem": 0.0084
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "4000M",
+      "k": 1.0,
+      "loss": 3.8465,
+      "sem": 0.0024
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "4000M",
+      "k": 2.0,
+      "loss": 3.8129,
+      "sem": 0.0048
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "4000M",
+      "k": 4.0,
+      "loss": 3.8022,
+      "sem": 0.0018
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "4000M",
+      "k": 8.0,
+      "loss": 3.7841,
+      "sem": 0.0006
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "4000M",
+      "k": 16.0,
+      "loss": 3.7914,
+      "sem": 0.01
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "4000M",
+      "k": 32.0,
+      "loss": 3.7972,
+      "sem": 0.008
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "4000M",
+      "k": 64.0,
+      "loss": 3.9842,
+      "sem": 0.0161
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "4000M",
+      "k": 128.0,
+      "loss": 10.7333,
+      "sem": 1.0082
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "4000M",
+      "k": 256.0,
+      "loss": 16.8833,
+      "sem": 1.1361
+    },
+    {
+      "optimizer": "ADAMW",
+      "checkpoint": "4000M",
+      "k": 512.0,
+      "loss": 16.0808,
+      "sem": 1.7281
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "50M",
+      "k": 1.0,
+      "loss": 4.2318,
+      "sem": 0.0019
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "50M",
+      "k": 2.0,
+      "loss": 4.2269,
+      "sem": 0.0028
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "50M",
+      "k": 4.0,
+      "loss": 4.2373,
+      "sem": 0.0033
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "50M",
+      "k": 8.0,
+      "loss": 4.2825,
+      "sem": 0.0032
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "50M",
+      "k": 16.0,
+      "loss": 4.4466,
+      "sem": 0.0053
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "50M",
+      "k": 32.0,
+      "loss": 5.0258,
+      "sem": 0.0262
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "50M",
+      "k": 64.0,
+      "loss": 7.1997,
+      "sem": 0.1778
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "500M",
+      "k": 1.0,
+      "loss": 3.9062,
+      "sem": 0.0003
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "500M",
+      "k": 2.0,
+      "loss": 3.9,
+      "sem": 0.0005
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "500M",
+      "k": 4.0,
+      "loss": 3.8971,
+      "sem": 0.0005
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "500M",
+      "k": 8.0,
+      "loss": 3.9068,
+      "sem": 0.0018
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "500M",
+      "k": 16.0,
+      "loss": 3.942,
+      "sem": 0.0031
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "500M",
+      "k": 32.0,
+      "loss": 4.0417,
+      "sem": 0.0048
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "500M",
+      "k": 64.0,
+      "loss": 4.4168,
+      "sem": 0.0321
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "500M",
+      "k": 128.0,
+      "loss": 5.5716,
+      "sem": 0.0442
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "500M",
+      "k": 256.0,
+      "loss": 8.3887,
+      "sem": 0.2461
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "500M",
+      "k": 512.0,
+      "loss": 10.8497,
+      "sem": 0.8768
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "500M",
+      "k": 1024.0,
+      "loss": 13.7219,
+      "sem": 0.1119
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "1000M",
+      "k": 8.0,
+      "loss": 3.8077,
+      "sem": 0.0008
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "1000M",
+      "k": 16.0,
+      "loss": 3.8263,
+      "sem": 0.0007
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "1000M",
+      "k": 32.0,
+      "loss": 3.8824,
+      "sem": 0.002
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "1000M",
+      "k": 64.0,
+      "loss": 4.0776,
+      "sem": 0.0089
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "1000M",
+      "k": 128.0,
+      "loss": 4.7151,
+      "sem": 0.0022
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "1000M",
+      "k": 256.0,
+      "loss": 6.1733,
+      "sem": 0.1258
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "1000M",
+      "k": 512.0,
+      "loss": 7.8973,
+      "sem": 0.171
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "1000M",
+      "k": 1024.0,
+      "loss": 9.9082,
+      "sem": 0.209
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "1500M",
+      "k": 1.0,
+      "loss": 3.7666,
+      "sem": 0.0007
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "1500M",
+      "k": 2.0,
+      "loss": 3.7609,
+      "sem": 0.0003
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "1500M",
+      "k": 4.0,
+      "loss": 3.756,
+      "sem": 0.0001
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "1500M",
+      "k": 8.0,
+      "loss": 3.7561,
+      "sem": 0.0009
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "1500M",
+      "k": 16.0,
+      "loss": 3.7637,
+      "sem": 0.0004
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "1500M",
+      "k": 32.0,
+      "loss": 3.8056,
+      "sem": 0.0022
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "1500M",
+      "k": 64.0,
+      "loss": 3.9371,
+      "sem": 0.0053
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "1500M",
+      "k": 128.0,
+      "loss": 4.4184,
+      "sem": 0.0127
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "1500M",
+      "k": 256.0,
+      "loss": 5.3906,
+      "sem": 0.0177
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "1500M",
+      "k": 512.0,
+      "loss": 6.7272,
+      "sem": 0.0488
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "1500M",
+      "k": 1024.0,
+      "loss": 7.7691,
+      "sem": 0.1438
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "2000M",
+      "k": 1.0,
+      "loss": 3.7276,
+      "sem": 0.0007
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "2000M",
+      "k": 2.0,
+      "loss": 3.7297,
+      "sem": 0.0004
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "2000M",
+      "k": 4.0,
+      "loss": 3.7375,
+      "sem": 0.0012
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "2000M",
+      "k": 8.0,
+      "loss": 3.7483,
+      "sem": 0.0022
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "2000M",
+      "k": 16.0,
+      "loss": 3.7567,
+      "sem": 0.0017
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "2000M",
+      "k": 32.0,
+      "loss": 3.7918,
+      "sem": 0.0028
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "2000M",
+      "k": 64.0,
+      "loss": 3.8933,
+      "sem": 0.0068
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "2000M",
+      "k": 128.0,
+      "loss": 4.2557,
+      "sem": 0.0081
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "2000M",
+      "k": 256.0,
+      "loss": 5.042,
+      "sem": 0.0155
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "2000M",
+      "k": 512.0,
+      "loss": 6.306,
+      "sem": 0.1027
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "2000M",
+      "k": 1024.0,
+      "loss": 7.5339,
+      "sem": 0.4522
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "3000M",
+      "k": 1.0,
+      "loss": 3.6474,
+      "sem": 0.0005
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "3000M",
+      "k": 2.0,
+      "loss": 3.6524,
+      "sem": 0.0003
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "3000M",
+      "k": 4.0,
+      "loss": 3.6604,
+      "sem": 0.0002
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "3000M",
+      "k": 8.0,
+      "loss": 3.6725,
+      "sem": 0.0002
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "3000M",
+      "k": 16.0,
+      "loss": 3.6754,
+      "sem": 0.0002
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "3000M",
+      "k": 32.0,
+      "loss": 3.6868,
+      "sem": 0.0008
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "3000M",
+      "k": 64.0,
+      "loss": 3.7387,
+      "sem": 0.0009
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "3000M",
+      "k": 128.0,
+      "loss": 3.9176,
+      "sem": 0.0059
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "3000M",
+      "k": 256.0,
+      "loss": 4.3438,
+      "sem": 0.0066
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "3000M",
+      "k": 512.0,
+      "loss": 4.7905,
+      "sem": 0.0283
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "3000M",
+      "k": 1024.0,
+      "loss": 5.2445,
+      "sem": 0.0167
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "4000M",
+      "k": 1.0,
+      "loss": 3.5766,
+      "sem": 0.0002
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "4000M",
+      "k": 2.0,
+      "loss": 3.5831,
+      "sem": 0.0
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "4000M",
+      "k": 4.0,
+      "loss": 3.5933,
+      "sem": 0.0002
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "4000M",
+      "k": 8.0,
+      "loss": 3.6072,
+      "sem": 0.0001
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "4000M",
+      "k": 16.0,
+      "loss": 3.6069,
+      "sem": 0.0004
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "4000M",
+      "k": 32.0,
+      "loss": 3.6105,
+      "sem": 0.001
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "4000M",
+      "k": 64.0,
+      "loss": 3.6269,
+      "sem": 0.0007
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "4000M",
+      "k": 128.0,
+      "loss": 3.6911,
+      "sem": 0.0005
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "4000M",
+      "k": 256.0,
+      "loss": 3.8269,
+      "sem": 0.0059
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "4000M",
+      "k": 512.0,
+      "loss": 4.0078,
+      "sem": 0.0064
+    },
+    {
+      "optimizer": "MUON",
+      "checkpoint": "4000M",
+      "k": 1024.0,
+      "loss": 4.2356,
+      "sem": 0.0062
+    }
+  ],
+  "cbs": {
+    "0.5": {
+      "ADAMW_50M": {
+        "mean": 16.0,
+        "std": 0.0
+      },
+      "MUON_50M": {
+        "mean": 16.0,
+        "std": 0.0
+      },
+      "ADAMW_500M": {
+        "mean": 43.0,
+        "std": 17.07
+      },
+      "MUON_500M": {
+        "mean": 53.0,
+        "std": 17.07
+      },
+      "ADAMW_1000M": {
+        "mean": 64.0,
+        "std": 0.0
+      },
+      "MUON_1000M": {
+        "mean": 65.0,
+        "std": 57.3
+      },
+      "ADAMW_1500M": {
+        "mean": 64.0,
+        "std": 0.0
+      },
+      "MUON_1500M": {
+        "mean": 64.0,
+        "std": 0.0
+      },
+      "ADAMW_2000M": {
+        "mean": 64.0,
+        "std": 0.0
+      },
+      "MUON_2000M": {
+        "mean": 85.0,
+        "std": 34.14
+      },
+      "ADAMW_3000M": {
+        "mean": 64.0,
+        "std": 0.0
+      },
+      "MUON_3000M": {
+        "mean": 128.0,
+        "std": 0.0
+      },
+      "ADAMW_4000M": {
+        "mean": 64.0,
+        "std": 0.0
+      },
+      "MUON_4000M": {
+        "mean": 256.0,
+        "std": 0.0
+      }
+    },
+    "0.2": {
+      "ADAMW_50M": {
+        "mean": 8.0,
+        "std": 0.0
+      },
+      "MUON_50M": {
+        "mean": 13.0,
+        "std": 4.27
+      },
+      "ADAMW_500M": {
+        "mean": 32.0,
+        "std": 0.0
+      },
+      "MUON_500M": {
+        "mean": 32.0,
+        "std": 0.0
+      },
+      "ADAMW_1000M": {
+        "mean": 64.0,
+        "std": 0.0
+      },
+      "MUON_1000M": {
+        "mean": 32.0,
+        "std": 0.0
+      },
+      "ADAMW_1500M": {
+        "mean": 64.0,
+        "std": 0.0
+      },
+      "MUON_1500M": {
+        "mean": 64.0,
+        "std": 0.0
+      },
+      "ADAMW_2000M": {
+        "mean": 64.0,
+        "std": 0.0
+      },
+      "MUON_2000M": {
+        "mean": 64.0,
+        "std": 0.0
+      },
+      "ADAMW_3000M": {
+        "mean": 64.0,
+        "std": 0.0
+      },
+      "MUON_3000M": {
+        "mean": 64.0,
+        "std": 0.0
+      },
+      "ADAMW_4000M": {
+        "mean": 53.0,
+        "std": 17.07
+      },
+      "MUON_4000M": {
+        "mean": 128.0,
+        "std": 0.0
+      }
+    },
+    "0.3": {
+      "ADAMW_50M": {
+        "mean": 16.0,
+        "std": 0.0
+      },
+      "MUON_50M": {
+        "mean": 16.0,
+        "std": 0.0
+      },
+      "ADAMW_500M": {
+        "mean": 32.0,
+        "std": 0.0
+      },
+      "MUON_500M": {
+        "mean": 32.0,
+        "std": 0.0
+      },
+      "ADAMW_1000M": {
+        "mean": 64.0,
+        "std": 0.0
+      },
+      "MUON_1000M": {
+        "mean": 64.0,
+        "std": 0.0
+      },
+      "ADAMW_1500M": {
+        "mean": 64.0,
+        "std": 0.0
+      },
+      "MUON_1500M": {
+        "mean": 64.0,
+        "std": 0.0
+      },
+      "ADAMW_2000M": {
+        "mean": 64.0,
+        "std": 0.0
+      },
+      "MUON_2000M": {
+        "mean": 64.0,
+        "std": 0.0
+      },
+      "ADAMW_3000M": {
+        "mean": 64.0,
+        "std": 0.0
+      },
+      "MUON_3000M": {
+        "mean": 128.0,
+        "std": 0.0
+      },
+      "ADAMW_4000M": {
+        "mean": 64.0,
+        "std": 0.0
+      },
+      "MUON_4000M": {
+        "mean": 256.0,
+        "std": 0.0
+      }
+    },
+    "0.01": {
+      "ADAMW_50M": {
+        "mean": 3.0,
+        "std": 1.07
+      },
+      "MUON_50M": {
+        "mean": 3.0,
+        "std": 1.07
+      },
+      "ADAMW_500M": {
+        "mean": 16.0,
+        "std": 0.0
+      },
+      "MUON_500M": {
+        "mean": 8.0,
+        "std": 0.0
+      },
+      "ADAMW_1000M": {
+        "mean": 27.0,
+        "std": 8.54
+      },
+      "MUON_1000M": {
+        "mean": 8.0,
+        "std": 0.0
+      },
+      "ADAMW_1500M": {
+        "mean": 27.0,
+        "std": 8.54
+      },
+      "MUON_1500M": {
+        "mean": 16.0,
+        "std": 0.0
+      },
+      "ADAMW_2000M": {
+        "mean": 32.0,
+        "std": 0.0
+      },
+      "MUON_2000M": {
+        "mean": 3.0,
+        "std": 1.07
+      },
+      "ADAMW_3000M": {
+        "mean": 16.0,
+        "std": 0.0
+      },
+      "MUON_3000M": {
+        "mean": 2.0,
+        "std": 0.0
+      },
+      "ADAMW_4000M": {
+        "mean": 27.0,
+        "std": 8.54
+      },
+      "MUON_4000M": {
+        "mean": 2.0,
+        "std": 0.0
+      }
+    }
+  }
+}
