@@ -9,7 +9,7 @@ The analysis pipeline consists of three scripts that should be run in sequence:
 1. `simple_log_plotter.py` - Extract and visualize training/validation results
 2. `cbs_analysis.py` - Calculate CBS values from log files
 3. `cbs_plot.py` - Generate CBS comparison plots
-4. `final_loss_grid.py' - Generate grid of final loss & CBS plots
+4. `final_loss_grid.py` - Generate grid of final loss & CBS plots
 
 ## Prerequisites
 
